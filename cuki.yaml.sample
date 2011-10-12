@@ -1,4 +1,6 @@
 # edit this and save it as config/cuki.yaml
+# the mappings associate the page IDs on Confluence with local feature files
+# the .feature extension is added automatically
 ---
 base: http://mywiki/pages/editpage.action?pageId=
 draft: "{info:title=Draft version}"
