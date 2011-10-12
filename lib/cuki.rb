@@ -7,7 +7,7 @@ require 'CGI'
 class Cuki
 
   # we're assuming that the acceptance criteria starts at this point and continues to the end of the page
-  FEATURE_START = /\d\. \*Specification\*/
+  START_INDICATOR = /\d\. \*Specification\*/
 
   def self.invoke
 
@@ -37,6 +37,7 @@ class Cuki
       title = doc.css('title').text
 
       wiki_text = CGI.unescapeHTML(doc.css('#markupTextarea').text)
+      wiki_text.gsub('&nbsp;', '')
 
       cuke_text = ''
       cuke_text += "@pending\n" if wiki_text.include?(config['draft'])
@@ -46,7 +47,9 @@ class Cuki
 
       cuke_text += "#{wiki_link}\n\n"
 
-      cuke_text += wiki_text.split(FEATURE_START).last
+      raise "couldn't find start of acceptance criteria" unless wiki_text.match(START_INDICATOR)
+
+      cuke_text += wiki_text.split(START_INDICATOR).last
 
       # remove the double pipes used for table headers in Confluence
       cuke_text.gsub!('||', '|')
