@@ -1,6 +1,18 @@
 = cuki
 
-Description goes here.
+Usage:
+
+    bundle exec cuki
+
+or
+
+    bin/cuki
+
+Options
+
+  - SKIP_AUTOFORMAT to avoid reformatting features (runs over the whole features directory)
+  - PEM=/path/to/something.pem.cer (for client certificates)
+  - CER=/path/to/something.pem (for client certificates)
 
 == Contributing to cuki
  
