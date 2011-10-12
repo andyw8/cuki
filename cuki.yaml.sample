@@ -1,0 +1,7 @@
+# edit this and save it as config/cuki.yaml
+---
+base: http://mywiki/pages/editpage.action?pageId=
+draft: "{info:title=Draft version}"
+mappings:
+  123: products/add_product
+  124: products/remove_product
