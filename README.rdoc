@@ -39,6 +39,12 @@ or, if using Bundler binstubs:
 * PEM=/path/to/something.pem.cer (for client certificates)
 * CER=/path/to/something.pem (for client certificates)
 
+== Known Issues and Limitation
+
+* Expects the Cucumber scenarios to continue to the the last part of the the page
+* Will only work with Confluence setups which have no password, or use client certificates for authentcation
+* One provides one-way sync, i.e. you can't edit a file locally and push it to Confluence
+
 == TODO
 
 * Handle links
