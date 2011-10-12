@@ -1,18 +1,22 @@
 = cuki
 
-Usage:
+== Setup
+
+Cuki expects a configuration file in config/cuki.yml. [See sample](/andyw8/cuki/blob/master/cuki.yaml.sample)
+
+== Usage
 
     bundle exec cuki
 
-or
+or, if using Bundler binstubs:
 
     bin/cuki
 
-Options
+== Options
 
-  - SKIP_AUTOFORMAT to avoid reformatting features (runs over the whole features directory)
-  - PEM=/path/to/something.pem.cer (for client certificates)
-  - CER=/path/to/something.pem (for client certificates)
+- SKIP_AUTOFORMAT to avoid reformatting features (runs over the whole features directory)
+- PEM=/path/to/something.pem.cer (for client certificates)
+- CER=/path/to/something.pem (for client certificates)
 
 == Contributing to cuki
  
