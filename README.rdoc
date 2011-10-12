@@ -35,9 +35,13 @@ or, if using Bundler binstubs:
 
 == Options
 
-- SKIP_AUTOFORMAT to avoid reformatting features (runs over the whole features directory)
-- PEM=/path/to/something.pem.cer (for client certificates)
-- CER=/path/to/something.pem (for client certificates)
+* SKIP_AUTOFORMAT to avoid reformatting features (runs over the whole features directory)
+* PEM=/path/to/something.pem.cer (for client certificates)
+* CER=/path/to/something.pem (for client certificates)
+
+== TODO
+
+* Handle links
 
 == Contributing to cuki
  
