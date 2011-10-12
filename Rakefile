@@ -17,8 +17,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "cuki"
   gem.homepage = "http://github.com/andyw8/cuki"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = "Pull acceptance criteria from a Confluence wiki page into a Cucumber feature file"
+  gem.description = ""
   gem.email = "andy@andywaite.com"
   gem.authors = ["Andy Waite"]
   # dependencies defined in Gemfile
