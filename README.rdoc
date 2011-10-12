@@ -1,10 +1,18 @@
 = cuki
 
+== Installation
+
+Require the gem in your Gemfile:
+
+    gem 'cuki'
+
 == Setup
 
-Cuki expects a configuration file in config/cuki.yml. See sample in cuki.yaml.sample
+Cuki expects a configuration file in config/cuki.yml. See the sample provided.
 
 == Usage
+    
+Run it from the command line:
 
     bundle exec cuki
 
