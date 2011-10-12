@@ -43,7 +43,7 @@ class Cuki
       cuke_text += "@pending\n" if wiki_text.include?(config['draft'])
 
       # assuming that title is format REF - TITLE - PROJECT NAME - WIKI NAME
-      cuke_text += "Feature: " + title.split(' - ')[1] + "\n\n"
+      cuke_text += "Feature: " + title.split(' - ').first + "\n\n"
 
       cuke_text += "#{wiki_link}\n\n"
 
