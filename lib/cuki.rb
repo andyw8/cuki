@@ -44,7 +44,7 @@ class Cuki
       # assuming that title is format REF - TITLE - PROJECT NAME - WIKI NAME
       cuke_text += "Feature: " + title.split(' - ')[1] + "\n\n"
 
-      cuke_text += "[View on Confluence](#{wiki_link})\n\n"
+      cuke_text += "#{wiki_link}\n\n"
 
       cuke_text += wiki_text.split(FEATURE_START).last
 
