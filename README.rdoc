@@ -6,10 +6,10 @@ Cuki provides an easy way to import acceptance criteria from a Confluence wiki i
 * Extracts only the acceptance criteria section of a wiki page
 * Converts Confluence tables to Cucumber tables
 * Strips out unnecessary Confluence formatting (headers., macros, etc.)
-* Adds a @pending tag if the wiki page is marked as a draft (configurable)
 * Includes a link back to the original Confluence page
 * Formats the feature using Cucumber's auto-formatter (optional)
 * Support client SSL certificates for use within an organisation's secure intranet
+* Assign tags to a feature based on the wiki page content
 
 It can be used as part of a CI process or just for ad-hoc imports.
 

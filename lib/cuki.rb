@@ -14,12 +14,13 @@ class Cuki
   end
 
   def initialize
+    autoformat
     read_config
     configure_http_client
     @mappings.each { |key, value|  process_mapping key, value }    
     autoformat
   end
-  
+
   private
   
   def read_config
@@ -33,7 +34,7 @@ class Cuki
     @mappings = config["mappings"]
     raise "mappings not found in #{config_path}" unless @mappings
     
-    @draft_indicator = config['draft']
+    @tag_mappings = config['tags']
   end
   
   def configure_http_client
@@ -57,7 +58,15 @@ class Cuki
     wiki_text.gsub('&nbsp;', '')
 
     cuke_text = ''
-    cuke_text += "@pending\n" if wiki_text.include?(@draft_indicator)
+
+    tags = []
+    if @tag_mappings
+      @tag_mappings.each do |tag, snippet|
+        tags << "@#{tag}" if wiki_text.include?(snippet)
+      end
+    end
+
+    cuke_text += tags.join(' ') + "\n" unless [] == tags
 
     title = title.split(' - ').first
 
@@ -66,14 +75,18 @@ class Cuki
 
     cuke_text += "#{wiki_link}\n\n"
 
-    raise "couldn't find start of acceptance criteria in #{title}" unless wiki_text.match(START_INDICATOR)
-
-    cuke_text += wiki_text.split(START_INDICATOR).last
+    if wiki_text.match(START_INDICATOR)
+      cuke_text += wiki_text.split(START_INDICATOR).last
+    else
+      cuke_text += wiki_text.split(START_INDICATOR).last
+    end
 
     # remove the double pipes used for table headers in Confluence
     cuke_text.gsub!('||', '|')
 
     # remove other noise
+    cuke_text.gsub!("\r\n", "\n")
+    cuke_text.gsub!("\\\\\n", '')
     cuke_text.gsub!('\\', '')
 
     # remove any unwanted headers

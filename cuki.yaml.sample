@@ -3,7 +3,8 @@
 # the .feature extension is added automatically
 ---
 base: http://mywiki/pages/editpage.action?pageId=
-draft: "{info:title=Draft version}"
+tags:
+  draft: "{info:title=Draft version}"
 mappings:
   123: products/add_product
   124: products/remove_product
