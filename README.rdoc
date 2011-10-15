@@ -27,11 +27,11 @@ Cuki expects a configuration file in config/cuki.yml. See the sample provided.
     
 Run it from the command line:
 
-    bundle exec cuki
+    bundle exec cuki pull
 
-or, if using Bundler binstubs:
+or, if using binstubs:
 
-    bin/cuki
+    bin/cuki pull
 
 == Options
 

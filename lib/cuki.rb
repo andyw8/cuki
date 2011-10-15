@@ -6,35 +6,43 @@ require 'CGI'
 
 class Cuki
 
-  # we're assuming that the acceptance criteria starts at this point and continues to the end of the page
-  START_INDICATOR = /\d\. \*Specification\*/
+  CONFIG_PATH = 'config/cuki.yaml'
 
-  def self.invoke
-    new
+  def self.invoke(args)
+    new(args)
   end
 
-  def initialize
-    autoformat
-    read_config
-    configure_http_client
-    @mappings.each { |key, value|  process_mapping key, value }    
-    autoformat
+  def initialize(args)
+    raise "No command given" if args.empty?
+    parse_config_file
+    command = args.first
+    if 'pull' == command
+      verify_project
+      configure_http_client
+      @config['mappings'].each { |id, filepath|  process_feature id, filepath }    
+      autoformat
+    elsif 'push' == command
+      feature_to_be_pushed = args[1] # e.g. features/products/add_product.feature
+      feature_as_in_yaml = feature_to_be_pushed.gsub('features/', '').gsub('.feature', '')
+      id = @config['mappings'].invert[feature_as_in_yaml]
+      raise "No mapping found for #{feature_as_in_yaml}" unless id
+    else
+      raise "Unknown command '#{command}"
+    end
   end
 
   private
   
-  def read_config
-    config_path = 'config/cuki.yaml'
-
-    config = YAML::load( File.open( config_path ) )
-
-    @base = config["base"]
-    raise "base not found in #{config_path}" unless @base
-
-    @mappings = config["mappings"]
-    raise "mappings not found in #{config_path}" unless @mappings
-    
-    @tag_mappings = config['tags']
+  def verify_project
+    # check features folder exists
+    raise "features folder not found" unless File.exists?('features')
+    autoformat
+  end
+  
+  def parse_config_file
+    @config = YAML::load( File.open( CONFIG_PATH ) )
+    raise "Host not found in #{CONFIG_PATH}" unless @config["host"]
+    raise "Mappings not found in #{CONFIG_PATH}" unless @config["mappings"]
   end
   
   def configure_http_client
@@ -43,76 +51,66 @@ class Cuki
     @client.ssl_config.set_client_cert_file(ENV['PEM'], ENV['PEM']) if ENV['PEM']
   end
   
-  def process_mapping(key, value)
-    wiki_link = @base + key.to_s
-
+  def process_feature(id, filepath)
+    @content = ''
+    wiki_link = @config['host'] + '/pages/editpage.action?pageId=' + id.to_s
     puts "Downloading #{wiki_link}"
-
     response = @client.get wiki_link
-
     doc = Nokogiri(response.body)
+        
+    process_tags
 
-    title = doc.css('title').text
+    @content += "Feature: " + doc.at('#content-title')[:value] + "\n\n"
+    @content += "#{wiki_link}\n\n"
+    @content += CGI.unescapeHTML(doc.css('#markupTextarea').text)
 
-    wiki_text = CGI.unescapeHTML(doc.css('#markupTextarea').text)
-    wiki_text.gsub('&nbsp;', '')
-
-    cuke_text = ''
-
-    tags = []
-    if @tag_mappings
-      @tag_mappings.each do |tag, snippet|
-        tags << "@#{tag}" if wiki_text.include?(snippet)
-      end
-    end
-
-    cuke_text += tags.join(' ') + "\n" unless [] == tags
-
-    title = title.split(' - ').first
-
-    # assuming that title is format REF - TITLE - PROJECT NAME - WIKI NAME
-    cuke_text += "Feature: " + title + "\n\n"
-
-    cuke_text += "#{wiki_link}\n\n"
-
-    if wiki_text.match(START_INDICATOR)
-      cuke_text += wiki_text.split(START_INDICATOR).last
-    else
-      cuke_text += wiki_text.split(START_INDICATOR).last
-    end
-
-    # remove the double pipes used for table headers in Confluence
-    cuke_text.gsub!('||', '|')
-
-    # remove other noise
-    cuke_text.gsub!("\r\n", "\n")
-    cuke_text.gsub!("\\\\\n", '')
-    cuke_text.gsub!('\\', '')
-
-    # remove any unwanted headers
-    cuke_text.gsub!(/h\d\. /, '')
-
-    # remove an other confluence markup
-    cuke_text.gsub!(/\{.*\}/, '')
-
-    # check features folder exists
-    raise "features folder not found" unless File.exists?('features')
-
-    file_path = "features/#{value}.feature"
-    dir_path = File.dirname(file_path)
-
-    unless File.exists?(dir_path)
-      Dir.mkdir(dir_path)
-    end
-
-    File.open(file_path, 'w') do |f|
-      puts "Writing #{file_path}"
-      f.puts cuke_text
-    end
+    clean
+    save_file filepath
   end
   
   def autoformat
     `cucumber -a . --dry-run -P` unless ENV['SKIP_AUTOFORMAT']
+  end
+  
+  def clean
+    
+    @content.gsub('&nbsp;', '')
+    
+    # remove the double pipes used for table headers in Confluence
+    @content.gsub!('||', '|')
+
+    # remove other noise
+    @content.gsub!("\r\n", "\n")
+    @content.gsub!("\\\\\n", '')
+    @content.gsub!('\\', '')
+
+    # remove any unwanted headers
+    @content.gsub!(/h\d\. /, '')
+
+    # remove any other confluence markup
+    @content.gsub!(/\{.*\}/, '')
+  end
+  
+  def process_tags
+    tags = []
+    if @config['tags']
+      @config['tags'].each do |tag, snippet|
+        tags << "@#{tag}" if @content.include?(snippet)
+      end
+    end
+    @content += tags.join(' ') + "\n" unless tags.empty?
+  end
+  
+  def save_file(filepath)
+    full_filepath = "features/#{filepath}.feature"
+    dir_path = File.dirname(full_filepath)
+
+    Dir.mkdir(dir_path) unless File.exists?(dir_path)      
+
+    File.open(full_filepath, 'w') do |f|
+      puts "Writing #{full_filepath}"
+      f.puts @content
+    end
   end
   
 end

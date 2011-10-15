@@ -2,9 +2,10 @@
 # the mappings associate the page IDs on Confluence with local feature files
 # the .feature extension is added automatically
 ---
-base: http://mywiki/pages/editpage.action?pageId=
+host: http://mywiki
 tags:
   draft: "{info:title=Draft version}"
+  signed_off: "{info:title=Signed-off}"
 mappings:
   123: products/add_product
   124: products/remove_product
