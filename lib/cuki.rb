@@ -87,8 +87,6 @@ class Cuki
     # remove any unwanted headers
     @content.gsub!(/h\d\. /, '')
 
-    # remove any other confluence markup
-    @content.gsub!(/\{.*\}/, '')
   end
   
   def process_tags
