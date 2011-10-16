@@ -50,6 +50,7 @@ or, if using binstubs:
 
 * Handle links
 * Add tests
+* Support for pushing features to Confluence (roundtrip editing)
 
 == Copyright
 
