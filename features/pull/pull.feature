@@ -49,7 +49,7 @@ Feature: Pull
       This feature describes adding a product
 
       """
-    Then the file "features/products/remove_product.feature" should contain exactly:
+    And the file "features/products/remove_product.feature" should contain exactly:
       """
       Feature: Remove Product
 
