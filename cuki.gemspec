@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "cuki"
-  s.version = "0.0.3"
+  s.version = "0.0.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andy Waite"]
-  s.date = "2011-10-14"
+  s.date = "2011-10-16"
   s.description = ""
   s.email = "andy@andywaite.com"
   s.executables = ["cuki"]
@@ -19,6 +19,8 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".document",
+    ".rspec",
+    ".rvmrc",
     "Gemfile",
     "Gemfile.lock",
     "LICENSE.txt",
@@ -28,9 +30,19 @@ Gem::Specification.new do |s|
     "bin/cuki",
     "cuki.gemspec",
     "cuki.yaml.sample",
+    "features/pull/pull.feature",
+    "features/pull/pull_single.feature",
+    "features/pull/tables.feature",
+    "features/pull/tags.feature",
+    "features/pull/textile.feature",
+    "features/push/push.feature",
+    "features/push/tables.feature",
+    "features/push/tags.feature",
+    "features/step_defs/pull_steps.rb",
+    "features/support/env.rb",
     "lib/cuki.rb",
-    "test/helper.rb",
-    "test/test_cuki.rb"
+    "spec/cuki_spec.rb",
+    "spec/spec_helper.rb"
   ]
   s.homepage = "http://github.com/andyw8/cuki"
   s.licenses = ["MIT"]
@@ -48,6 +60,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.6.4"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
+      s.add_development_dependency(%q<rspec>, [">= 0"])
     else
       s.add_dependency(%q<httpclient>, [">= 0"])
       s.add_dependency(%q<nokogiri>, [">= 0"])
@@ -55,6 +68,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
       s.add_dependency(%q<rcov>, [">= 0"])
+      s.add_dependency(%q<rspec>, [">= 0"])
     end
   else
     s.add_dependency(%q<httpclient>, [">= 0"])
@@ -63,6 +77,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
     s.add_dependency(%q<rcov>, [">= 0"])
+    s.add_dependency(%q<rspec>, [">= 0"])
   end
 end
 
