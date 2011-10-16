@@ -15,11 +15,12 @@ Feature: Push
 
       This is my feature
       """
-    When I run `cuki push features/products/add_product.feature`
-    Then the feature should be pushed to "http://mywiki/pages/editpage.action?pageId=123" with title "Hello world & all" with:
+    And a Confluence page exists on "mywiki" with id 123, title "Hello world & all" and content:
       """
       This is my feature
       """
+    When I run `cuki push features/products/add_product.feature`
+    Then the push should be successful
 
   @pending
   Scenario: Push a feature containing a scenario
