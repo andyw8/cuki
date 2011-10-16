@@ -56,7 +56,7 @@ class Cuki
   def parse_config_file
     unless File.exist?(CONFIG_PATH)
       puts "No config file found at #{CONFIG_PATH}"
-      exit(0)
+      exit(1)
     end
     @config = YAML::load( File.open( CONFIG_PATH ) )
     raise "Host not found in #{CONFIG_PATH}" unless @config["host"]

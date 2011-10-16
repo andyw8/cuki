@@ -11,3 +11,7 @@ Given /^a Confluence page on "([^"]*)" with id (\d+):$/ do |host, id, content|
   end
 
 end
+
+Given /^no file named "([^"]*)" exists$/ do |file|
+  File.delete(file)
+end
