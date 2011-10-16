@@ -15,7 +15,7 @@ Feature: Pull
       No config file found at config/cuki.yaml
       """
 
-  Scenario: 
+  Scenario: Pull all features
     Given a file named "config/cuki.yaml" with:
       """
       ---

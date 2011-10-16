@@ -32,7 +32,17 @@ class Cuki
     if 'pull' == action
       verify_project
       configure_http_client
-      @config['mappings'].each { |id, filepath|  process_feature id, filepath }    
+      file = args[1]
+      if file
+        puts "got file: #{file}"
+        key = file.gsub('features/', '').gsub('.feature', '')
+        puts "key: #{key}"
+        id = @config['mappings'].invert[key]
+        filepath = key
+        process_feature id, filepath
+      else
+        @config['mappings'].each { |id, filepath|  process_feature id, filepath }
+      end
       #autoformat
     elsif 'push' == action
       feature_to_be_pushed = args[1] # e.g. features/products/add_product.feature
