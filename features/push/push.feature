@@ -2,7 +2,7 @@
 Feature: Push
 
   Background: 
-    Given the config:
+    Given a file named "config/cuki.yaml" with:
       """
       ---
       host: http://mywiki
@@ -11,13 +11,13 @@ Feature: Push
       """
 
   Scenario: Push a feature with no scenarios
-    Given a feature file in "features/hello_world.feature":
+    Given a file named "config/cuki.yaml" with:
       """
       Feature: Hello world & all
 
       This is my feature
       """
-    When I push that feature
+    When I run `cuki push features/products/add_product.feature`
     Then the feature should be pushed to "http://mywiki/pages/editpage.action?pageId=123"
     And the Confluence content should be:
       """
@@ -29,8 +29,7 @@ Feature: Push
       """
 
   Scenario: Push a feature containing a scenario
-    Given a feature file in "features/hello_world.feature"
-    And that feature includes the scenario:
+    Given a file named "config/cuki.yaml" with:
       """
       Scenario: My scenario
         Given something
