@@ -1,6 +1,6 @@
 Feature: Push
 
-  @focus
+  @focus @pending
   Scenario: Push a feature with no scenarios
     Given a file named "config/cuki.yaml" with:
       """
