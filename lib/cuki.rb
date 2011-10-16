@@ -13,7 +13,7 @@ class Cuki
   end
 
   def initialize(args)
-    raise "No command given" if args.empty?
+    raise "No action given" if args.empty?
     parse_config_file
     command = args.first
     if 'pull' == command
