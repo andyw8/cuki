@@ -76,8 +76,6 @@ class Cuki
     response = @client.get wiki_link
     doc = Nokogiri(response.body)
         
-    process_tags
-
     unless doc.at('#content-title')
       puts "Not a valid confluence page:"
       puts doc.to_s
@@ -89,6 +87,9 @@ class Cuki
     @content += CGI.unescapeHTML(doc.css('#markupTextarea').text)
 
     clean
+
+    process_tags
+
     save_file filepath
   end
   
@@ -117,11 +118,16 @@ class Cuki
   def process_tags
     tags = []
     if @config['tags']
-      @config['tags'].each do |tag, snippet|
-        tags << "@#{tag}" if @content.include?(snippet)
+      @config['tags'].each_pair do |tag, snippet|
+        tags << "@#{tag}"  if @content.include?(snippet)
       end
     end
-    @content += tags.join(' ') + "\n" unless tags.empty?
+    unless tags.empty?
+      @content = tags.join(' ') + "\n" + @content
+      tags.each do |tag|
+        @content.gsub!(@config['tags'][tag.gsub('@', '')], '')
+      end
+    end
   end
   
   def save_file(filepath)
