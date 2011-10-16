@@ -3,6 +3,16 @@ require 'httpclient'
 require 'nokogiri'
 require 'yaml'
 require 'CGI'
+require 'webmock'
+require 'json'
+
+include WebMock::API
+if File.exist?('stubs.json')
+  stubs = JSON.parse(File.open('stubs.json').read)
+  stubs.each_pair do |url, body|
+    stub_request(:get, url).to_return(:status => 200, :body => body, :headers => {})
+  end
+end
 
 class Cuki
 
@@ -15,7 +25,7 @@ class Cuki
   def initialize(args)
     if args.empty?
       puts "No action given"
-      exit 1
+      exit(1)
     end
     parse_config_file
     action = args.first
@@ -23,7 +33,7 @@ class Cuki
       verify_project
       configure_http_client
       @config['mappings'].each { |id, filepath|  process_feature id, filepath }    
-      autoformat
+      #autoformat
     elsif 'push' == action
       feature_to_be_pushed = args[1] # e.g. features/products/add_product.feature
       feature_as_in_yaml = feature_to_be_pushed.gsub('features/', '').gsub('.feature', '')
@@ -31,7 +41,7 @@ class Cuki
       raise "No mapping found for #{feature_as_in_yaml}" unless id
     else
       puts "Unknown action '#{action}"
-      exit 1
+      exit(1)
     end
   end
 
@@ -40,13 +50,13 @@ class Cuki
   def verify_project
     # check features folder exists
     raise "features folder not found" unless File.exists?('features')
-    autoformat
+    #autoformat
   end
   
   def parse_config_file
     unless File.exist?(CONFIG_PATH)
       puts "No config file found at #{CONFIG_PATH}"
-      exit 1
+      exit(0)
     end
     @config = YAML::load( File.open( CONFIG_PATH ) )
     raise "Host not found in #{CONFIG_PATH}" unless @config["host"]
@@ -69,7 +79,8 @@ class Cuki
     process_tags
 
     unless doc.at('#content-title')
-      puts "Not a valid confluence page"
+      puts "Not a valid confluence page:"
+      puts doc.to_s
       exit(1)
     end
 
