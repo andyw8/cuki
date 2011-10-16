@@ -5,5 +5,13 @@ require 'webmock/cucumber'
 
 Before do
   @dirs = ["."]
+  cleanup
+end
+
+After do
+  cleanup
+end
+
+def cleanup
   FileUtils.rm_rf 'features/products'
 end
