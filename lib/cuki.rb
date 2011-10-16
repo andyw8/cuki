@@ -34,12 +34,9 @@ class Cuki
       configure_http_client
       file = args[1]
       if file
-        puts "got file: #{file}"
         key = file.gsub('features/', '').gsub('.feature', '')
-        puts "key: #{key}"
         id = @config['mappings'].invert[key]
-        filepath = key
-        process_feature id, filepath
+        process_feature id, key
       else
         @config['mappings'].each { |id, filepath|  process_feature id, filepath }
       end
