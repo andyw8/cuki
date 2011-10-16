@@ -46,3 +46,6 @@ pkg
 
 # For rubinius:
 #*.rbc
+stubs.json
+features/products/*.feature
+config/cuki.yaml
