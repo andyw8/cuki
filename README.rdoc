@@ -32,6 +32,10 @@ Run it from the command line:
 or, if using binstubs:
 
     bin/cuki pull
+    
+You can also pull a single feature:
+
+    cuki pull features/add_product.feature
 
 == Options
 
@@ -49,7 +53,6 @@ or, if using binstubs:
 == TODO
 
 * Handle links
-* Add tests
 * Support for pushing features to Confluence (roundtrip editing)
 
 == Copyright
