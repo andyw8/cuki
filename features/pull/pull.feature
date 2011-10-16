@@ -21,8 +21,8 @@ Feature: Pull
       ---
       host: http://example.com
       mappings:
-        123: products/add_product
-        456: products/remove_product
+        123: features/products/add_product.feature
+        456: features/products/remove_product.feature
       """
     And a Confluence page on "example.com" with id 123:
       """

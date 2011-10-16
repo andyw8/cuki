@@ -26,9 +26,8 @@ class Cuki
       verify_project
       file = args[1]
       if file
-        key = file.gsub('features/', '').gsub('.feature', '')
-        id = @config['mappings'].invert[key]
-        pull_feature id, key
+        id = @config['mappings'].invert[file]
+        pull_feature id, file
       else
         @config['mappings'].each { |id, filepath|  pull_feature id, filepath }
       end
@@ -128,13 +127,12 @@ class Cuki
   end
   
   def save_file(filepath)
-    full_filepath = "features/#{filepath}.feature"
-    dir_path = File.dirname(full_filepath)
+    dir_path = File.dirname(filepath)
 
     Dir.mkdir(dir_path) unless File.exists?(dir_path)      
 
-    File.open(full_filepath, 'w') do |f|
-      puts "Writing #{full_filepath}"
+    File.open(filepath, 'w') do |f|
+      puts "Writing #{filepath}"
       f.puts @content
     end
   end

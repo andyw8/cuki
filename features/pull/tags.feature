@@ -9,7 +9,7 @@ Feature: Tags
         draft: "{info:title=Draft version}"
         signed_off: "{info:title=Signed-off}"
       mappings:
-        123: products/add_product
+        123: features/products/add_product.feature
       """
     And a Confluence page on "example.com" with id 123:
       """

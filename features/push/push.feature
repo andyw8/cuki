@@ -7,7 +7,7 @@ Feature: Push
       ---
       host: http://mywiki
       mappings:
-        123: products/add_product
+        123: features/products/add_product.feature
       """
     And a file named "features/products/add_product.feature" with:
       """

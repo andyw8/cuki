@@ -6,7 +6,7 @@ Feature: Textile
       ---
       host: http://example.com
       mappings:
-        123: products/add_product
+        123: features/products/add_product.feature
       """
     And a Confluence page on "example.com" with id 123:
       """

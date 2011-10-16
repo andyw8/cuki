@@ -1,11 +1,10 @@
 # edit this and save it as config/cuki.yaml
 # the mappings associate the page IDs on Confluence with local feature files
-# the .feature extension is added automatically
 ---
 host: http://mywiki
 tags:
   draft: "{info:title=Draft version}"
   signed_off: "{info:title=Signed-off}"
 mappings:
-  123: products/add_product
-  124: products/remove_product
+  123: features/products/add_product.feature
+  124: features/products/remove_product.feature
