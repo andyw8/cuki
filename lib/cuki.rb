@@ -13,21 +13,25 @@ class Cuki
   end
 
   def initialize(args)
-    raise "No action given" if args.empty?
+    if args.empty?
+      puts "No action given"
+      exit 1
+    end
     parse_config_file
-    command = args.first
-    if 'pull' == command
+    action = args.first
+    if 'pull' == action
       verify_project
       configure_http_client
       @config['mappings'].each { |id, filepath|  process_feature id, filepath }    
       autoformat
-    elsif 'push' == command
+    elsif 'push' == action
       feature_to_be_pushed = args[1] # e.g. features/products/add_product.feature
       feature_as_in_yaml = feature_to_be_pushed.gsub('features/', '').gsub('.feature', '')
       id = @config['mappings'].invert[feature_as_in_yaml]
       raise "No mapping found for #{feature_as_in_yaml}" unless id
     else
-      raise "Unknown command '#{command}"
+      puts "Unknown action '#{action}"
+      exit 1
     end
   end
 
@@ -40,6 +44,10 @@ class Cuki
   end
   
   def parse_config_file
+    unless File.exist?(CONFIG_PATH)
+      puts "No config file found at #{CONFIG_PATH}"
+      exit 1
+    end
     @config = YAML::load( File.open( CONFIG_PATH ) )
     raise "Host not found in #{CONFIG_PATH}" unless @config["host"]
     raise "Mappings not found in #{CONFIG_PATH}" unless @config["mappings"]
@@ -59,6 +67,11 @@ class Cuki
     doc = Nokogiri(response.body)
         
     process_tags
+
+    unless doc.at('#content-title')
+      puts "Not a valid confluence page"
+      exit(1)
+    end
 
     @content += "Feature: " + doc.at('#content-title')[:value] + "\n\n"
     @content += "#{wiki_link}\n\n"
