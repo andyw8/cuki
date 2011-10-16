@@ -16,13 +16,11 @@ class Cuki
   end
 
   def initialize(args)
-    if args.empty?
-      puts "No action given"
-      exit(1)
-    end
-    parse_config_file
-    action = args.first
+    validate_args args
+    read_config
     configure_http_client
+
+    action = args.first
     if 'pull' == action
       configure_pull_stubs
       verify_project
@@ -30,9 +28,9 @@ class Cuki
       if file
         key = file.gsub('features/', '').gsub('.feature', '')
         id = @config['mappings'].invert[key]
-        process_feature id, key
+        pull_feature id, key
       else
-        @config['mappings'].each { |id, filepath|  process_feature id, filepath }
+        @config['mappings'].each { |id, filepath|  pull_feature id, filepath }
       end
       #autoformat
     elsif 'push' == action
@@ -52,7 +50,7 @@ class Cuki
     #autoformat
   end
   
-  def parse_config_file
+  def read_config
     unless File.exist?(CONFIG_PATH)
       puts "No config file found at #{CONFIG_PATH}"
       exit(1)
@@ -68,7 +66,7 @@ class Cuki
     @client.ssl_config.set_client_cert_file(ENV['PEM'], ENV['PEM']) if ENV['PEM']
   end
   
-  def process_feature(id, filepath)
+  def pull_feature(id, filepath)
     @content = ''
     wiki_link = @config['host'] + '/pages/editpage.action?pageId=' + id.to_s
     puts "Downloading #{wiki_link}"
@@ -161,6 +159,13 @@ class Cuki
                 to_return(:status => 200, :body => "", :headers => {})
       end
       FileUtils.rm 'push_stubs.json'
+    end
+  end
+  
+  def validate_args args
+    if args.empty?
+      puts "No action given"
+      exit(1)
     end
   end
   
