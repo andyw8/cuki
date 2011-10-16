@@ -13,7 +13,7 @@ Feature: Textile
       <input id="content-title" value="Add Product">
       <div id="markupTextarea">
       h5. Scenario: Foo
-      
+
       h6. Scenario Outline: Bar
       </div>
       """
@@ -26,7 +26,8 @@ Feature: Textile
 
 
       Scenario: Foo
-      
+
       Scenario Outline: Bar
 
       """
+

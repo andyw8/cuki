@@ -1,6 +1,6 @@
 Feature: Tags
 
-  Scenario:
+  Scenario: 
     Given a file named "config/cuki.yaml" with:
       """
       ---
@@ -30,3 +30,4 @@ Feature: Tags
       Scenario: Foo
 
       """
+

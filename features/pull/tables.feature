@@ -2,7 +2,6 @@
 Feature: Tables
 
   Scenario: Table with more than one column
-
     Given a file named "config/cuki.yaml" with:
       """
       ---
@@ -38,3 +37,4 @@ Feature: Tables
       | b | 2 |
 
       """
+
