@@ -85,7 +85,8 @@ class Cuki
     @content.gsub!('\\', '')
 
     # remove any unwanted headers
-    @content.gsub!(/h\d\. /, '')
+    @content.gsub!(/h\d\. (Scenario: .*)/, '\1')
+    @content.gsub!(/h\d\. (Scenario Outline: .*)/, '\1')
 
   end
   
