@@ -3,9 +3,13 @@ require 'httpclient'
 require 'nokogiri'
 require 'yaml'
 require 'CGI'
-require 'webmock'
 require 'json'
-include WebMock::API
+
+# terrible hack
+if File.exist?('stubs.json') || File.exist?('stubs.json')
+  require 'webmock'
+  include WebMock::API
+end
 
 class Cuki
 
@@ -27,6 +31,7 @@ class Cuki
       file = args[1]
       if file
         id = @config['mappings'].invert[file]
+        raise "could not get id for #{file}"
         pull_feature id, file
       else
         @config['mappings'].each { |id, filepath|  pull_feature id, filepath }
