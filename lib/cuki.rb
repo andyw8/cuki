@@ -54,7 +54,7 @@ class Cuki
       end
       #autoformat
     elsif 'push' == action
-      Pusher.push(args[1], @config)
+      Pusher.push file, @config
     else
       puts "Unknown action '#{action}"
       exit(1)
