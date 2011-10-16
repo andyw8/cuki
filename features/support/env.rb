@@ -5,4 +5,5 @@ require 'webmock/cucumber'
 
 Before do
   @dirs = ["."]
+  FileUtils.rm_rf 'features/products'
 end
