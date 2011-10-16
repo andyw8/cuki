@@ -5,26 +5,7 @@ require 'yaml'
 require 'CGI'
 require 'webmock'
 require 'json'
-
 include WebMock::API
-if File.exist?('stubs.json')
-  stubs = JSON.parse(File.open('stubs.json').read)
-  stubs.each_pair do |url, body|
-    stub_request(:get, url).to_return(:status => 200, :body => body, :headers => {})
-  end
-  FileUtils.rm 'stubs.json'
-end
-
-if File.exist?('push_stubs.json')
-  stubs = JSON.parse(File.open('push_stubs.json').read)
-  stubs.each do |a|
-    stub_request(:post, "http://mywiki/").
-            with(:body => {"title" => a['title'], "content"=> "\n\n" + a['content']},
-                 :headers => {'Content-Type'=>'application/x-www-form-urlencoded'}).
-            to_return(:status => 200, :body => "", :headers => {})
-  end
-  FileUtils.rm 'push_stubs.json'
-end
 
 class Cuki
 
@@ -43,6 +24,7 @@ class Cuki
     action = args.first
     configure_http_client
     if 'pull' == action
+      configure_pull_stubs
       verify_project
       file = args[1]
       if file
@@ -54,6 +36,7 @@ class Cuki
       end
       #autoformat
     elsif 'push' == action
+      configure_push_stubs
       Pusher.push file, @config
     else
       puts "Unknown action '#{action}"
@@ -155,6 +138,29 @@ class Cuki
     File.open(full_filepath, 'w') do |f|
       puts "Writing #{full_filepath}"
       f.puts @content
+    end
+  end
+  
+  def configure_pull_stubs
+    if File.exist?('stubs.json')
+      stubs = JSON.parse(File.open('stubs.json').read)
+      stubs.each_pair do |url, body|
+        stub_request(:get, url).to_return(:status => 200, :body => body, :headers => {})
+      end
+      FileUtils.rm 'stubs.json'
+    end
+  end
+  
+  def configure_push_stubs
+    if File.exist?('push_stubs.json')
+      stubs = JSON.parse(File.open('push_stubs.json').read)
+      stubs.each do |a|
+        stub_request(:post, "http://mywiki/").
+                with(:body => {"title" => a['title'], "content"=> "\n\n" + a['content']},
+                     :headers => {'Content-Type'=>'application/x-www-form-urlencoded'}).
+                to_return(:status => 200, :body => "", :headers => {})
+      end
+      FileUtils.rm 'push_stubs.json'
     end
   end
   
