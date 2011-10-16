@@ -1,6 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    addressable (2.2.6)
     aruba (0.4.6)
       bcat (>= 0.6.1)
       childprocess (>= 0.2.0)
@@ -12,6 +13,7 @@ GEM
     builder (3.0.0)
     childprocess (0.2.2)
       ffi (~> 1.0.6)
+    crack (0.3.1)
     cucumber (1.1.0)
       builder (>= 2.1.2)
       diff-lcs (>= 1.1.2)
@@ -44,6 +46,9 @@ GEM
     rspec-mocks (2.6.0)
     shoulda (2.11.3)
     term-ansicolor (1.0.6)
+    webmock (1.7.7)
+      addressable (~> 2.2, > 2.2.5)
+      crack (>= 0.1.7)
 
 PLATFORMS
   ruby
@@ -58,3 +63,4 @@ DEPENDENCIES
   rcov
   rspec
   shoulda
+  webmock
