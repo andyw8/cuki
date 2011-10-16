@@ -1,7 +1,7 @@
-@pending
 Feature: Push
 
-  Background: 
+  @focus
+  Scenario: Push a feature with no scenarios
     Given a file named "config/cuki.yaml" with:
       """
       ---
@@ -9,25 +9,19 @@ Feature: Push
       mappings:
         123: products/add_product
       """
-
-  Scenario: Push a feature with no scenarios
-    Given a file named "config/cuki.yaml" with:
+    And a file named "features/products/add_product.feature" with:
       """
       Feature: Hello world & all
 
       This is my feature
       """
     When I run `cuki push features/products/add_product.feature`
-    Then the feature should be pushed to "http://mywiki/pages/editpage.action?pageId=123"
-    And the Confluence content should be:
+    Then the feature should be pushed to "http://mywiki/pages/editpage.action?pageId=123" with title "Hello world & all" with:
       """
       This is my feature
       """
-    And the Confluence title should be:
-      """
-      Hello world & all
-      """
 
+  @pending
   Scenario: Push a feature containing a scenario
     Given a file named "config/cuki.yaml" with:
       """
@@ -46,6 +40,7 @@ Feature: Push
       Then something
       """
 
+  @pending
   Scenario: Push a feature containing a scenario outline
     
     The first row of the examples table should be a header row.
@@ -74,6 +69,7 @@ Feature: Push
 
       """
 
+  @pending
   Scenario: Push a feature containing a scenario outline with multiple example
     Pending
 

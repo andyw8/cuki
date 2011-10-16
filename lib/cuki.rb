@@ -12,6 +12,18 @@ if File.exist?('stubs.json')
   stubs.each_pair do |url, body|
     stub_request(:get, url).to_return(:status => 200, :body => body, :headers => {})
   end
+  FileUtils.rm 'stubs.json'
+end
+
+if File.exist?('push_stubs.json')
+  stubs = JSON.parse(File.open('push_stubs.json').read)
+  stubs.each do |a|
+    stub_request(:post, "http://mywiki/").
+            with(:body => {"title" => a['title'], "content"=> "\n\n" + a['content']},
+                 :headers => {'Content-Type'=>'application/x-www-form-urlencoded'}).
+            to_return(:status => 200, :body => "", :headers => {})
+  end
+  FileUtils.rm 'push_stubs.json'
 end
 
 class Cuki
@@ -29,9 +41,9 @@ class Cuki
     end
     parse_config_file
     action = args.first
+    configure_http_client
     if 'pull' == action
       verify_project
-      configure_http_client
       file = args[1]
       if file
         key = file.gsub('features/', '').gsub('.feature', '')
@@ -46,6 +58,11 @@ class Cuki
       feature_as_in_yaml = feature_to_be_pushed.gsub('features/', '').gsub('.feature', '')
       id = @config['mappings'].invert[feature_as_in_yaml]
       raise "No mapping found for #{feature_as_in_yaml}" unless id
+
+      content = File.open(feature_to_be_pushed).read.gsub(/Feature: .*/, '')
+      title = File.open(feature_to_be_pushed).read.match(/Feature: (.*)/)[1]
+      response = @client.post(@config['host'], {:title => title, :content => content})
+
     else
       puts "Unknown action '#{action}"
       exit(1)
