@@ -113,6 +113,13 @@ class Cuki
     # remove any unwanted headers
     @content.gsub!(/h\d\. (Scenario: .*)/, '\1')
     @content.gsub!(/h\d\. (Scenario Outline: .*)/, '\1')
+    @content.gsub!(/h\d\. (Background: .*)/, '\1')
+    
+    #Remove fancy quotes
+    @content.gsub!('’', "'")
+    @content.gsub!('‘', "'")
+    @content.gsub!('“', '"')
+    @content.gsub!('”', '"')
 
   end
   
