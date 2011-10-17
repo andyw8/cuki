@@ -2,6 +2,7 @@ source "http://rubygems.org"
 
 gem 'httpclient'
 gem 'nokogiri'
+gem "parallel"
 
 group :development do
   gem "shoulda", ">= 0"
