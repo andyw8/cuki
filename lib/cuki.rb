@@ -25,6 +25,14 @@ class Cuki
     configure_http_client
 
     action = args.first
+    if args.include?('--skip-autoformat')
+      args.delete_if { |arg| '--skip-autoformat' == arg }
+      @skip_autoformat = true
+    end
+    if args.include?('--skip-header')
+      args.delete_if { |arg| '--skip-header' == arg }
+      @skip_header = true
+    end
     if 'pull' == action
       configure_pull_stubs
       verify_project
@@ -36,7 +44,7 @@ class Cuki
       else
         @config['mappings'].each { |id, filepath|  pull_feature id, filepath }
       end
-      #autoformat
+      autoformat
     elsif 'push' == action
       configure_push_stubs
       Pusher.push file, @config
@@ -51,7 +59,7 @@ class Cuki
   def verify_project
     # check features folder exists
     raise "features folder not found" unless File.exists?('features')
-    #autoformat
+    autoformat
   end
   
   def read_config
@@ -95,7 +103,9 @@ class Cuki
   end
   
   def autoformat
-    `cucumber -a . --dry-run -P` unless ENV['SKIP_AUTOFORMAT']
+    `cucumber -a . --dry-run -P` unless @skip_autoformat
+  end
+  
   end
   
   def clean
