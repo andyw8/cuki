@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "cuki"
-  s.version = "0.0.6"
+  s.version = "0.0.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andy Waite"]
-  s.date = "2011-10-16"
+  s.date = "2011-10-17"
   s.description = ""
   s.email = "andy@andywaite.com"
   s.executables = ["cuki"]
@@ -28,10 +28,12 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "bin/cuki",
+    "cucumber.yml",
     "cuki.gemspec",
     "cuki.yaml.sample",
     "features/pull/pull.feature",
     "features/pull/pull_single.feature",
+    "features/pull/splitting.feature",
     "features/pull/tables.feature",
     "features/pull/tags.feature",
     "features/pull/textile.feature",
@@ -43,6 +45,7 @@ Gem::Specification.new do |s|
     "features/support/env.rb",
     "lib/cuki.rb",
     "lib/pusher.rb",
+    "lib/string_utils.rb",
     "spec/cuki_spec.rb",
     "spec/spec_helper.rb"
   ]
@@ -58,6 +61,7 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<httpclient>, [">= 0"])
       s.add_runtime_dependency(%q<nokogiri>, [">= 0"])
+      s.add_runtime_dependency(%q<parallel>, [">= 0"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.6.4"])
@@ -66,6 +70,7 @@ Gem::Specification.new do |s|
     else
       s.add_dependency(%q<httpclient>, [">= 0"])
       s.add_dependency(%q<nokogiri>, [">= 0"])
+      s.add_dependency(%q<parallel>, [">= 0"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
@@ -75,6 +80,7 @@ Gem::Specification.new do |s|
   else
     s.add_dependency(%q<httpclient>, [">= 0"])
     s.add_dependency(%q<nokogiri>, [">= 0"])
+    s.add_dependency(%q<parallel>, [">= 0"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.6.4"])

@@ -84,9 +84,10 @@ class Cuki
   
   def pull_feature(id, filepath)
     @content = ''
-    wiki_link = @config['host'] + '/pages/viewpage.action?pageId=' + id.to_s
-    puts "Downloading #{wiki_link}"
-    response = @client.get wiki_link
+    wiki_edit_link = @config['host'] + '/pages/editpage.action?pageId=' + id.to_s
+    wiki_view_link = @config['host'] + '/pages/viewpage.action?pageId=' + id.to_s
+    puts "Downloading #{wiki_edit_link}"
+    response = @client.get wiki_edit_link
     doc = Nokogiri(response.body)
 
     unless doc.at('#content-title')
@@ -100,7 +101,7 @@ class Cuki
     else
 
       @content += "Feature: " + doc.at('#content-title')[:value] + "\n\n"
-      @content += "#{wiki_link}\n\n"
+      @content += "#{wiki_view_link}\n\n"
       @content += get_markup(doc)
 
       clean
@@ -142,8 +143,10 @@ class Cuki
       dirpath = @config['mappings'][id]
 
       FileUtils.mkdir_p(dirpath)
-
-      File.open("#{dirpath}/#{feature_filename}.feature", 'w') do |f|
+      
+      fname = "#{dirpath}/#{feature_filename.gsub("\r", '')}.feature"
+      File.open(fname, 'w') do |f|
+        puts "Writing #{fname}"
         f.write "Feature: #{title}\n\n"
         link = @config['host'] + "/pages/viewpage.action?pageId=#{id}##{feature_title_compressed}-#{scenario_title_compressed}"
         f.write "\n\n" + link

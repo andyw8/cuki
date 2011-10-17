@@ -1,6 +1,6 @@
 class String
   def anchorize
-    self.gsub(' ', '')
+    CGI.escape(self.gsub(' ', '').gsub("\r", ''))
   end
 
   def parameterize
