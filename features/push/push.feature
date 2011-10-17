@@ -19,7 +19,7 @@ Feature: Push
       """
       This is my feature
       """
-    When I run `cuki push features/products/add_product.feature`
+    When I run `cuki push features/products/add_product.feature SKIP_AUTOFORMAT=true`
     Then the push should be successful
 
   @pending

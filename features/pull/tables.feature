@@ -21,7 +21,7 @@ Feature: Tables
       | b | 2 |
       </div>
       """
-    When I run `cuki pull`
+    When I run `cuki pull SKIP_AUTOFORMAT=true`
     Then the file "features/products/add_product.feature" should contain exactly:
       """
       Feature: Add Product

@@ -17,7 +17,7 @@ Feature: Textile
       h6. Scenario Outline: Bar
       </div>
       """
-    When I run `cuki pull`
+    When I run `cuki pull SKIP_AUTOFORMAT=true`
     Then the file "features/products/add_product.feature" should contain exactly:
       """
       Feature: Add Product
