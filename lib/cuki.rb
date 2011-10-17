@@ -5,6 +5,7 @@ require 'yaml'
 require 'CGI'
 require 'json'
 require 'parallel'
+require File.dirname(__FILE__) + '/string_utils.rb'
 
 # terrible hack
 if File.exist?('stubs.json') || File.exist?('stubs.json')
@@ -117,7 +118,7 @@ class Cuki
   end
   
   def handle_multi doc, id
-    feature_title_compressed = doc.at('#content-title')[:value].gsub(' ', '')
+    feature_title_compressed = doc.at('#content-title')[:value].anchorize
 
     @content += get_markup(doc)
     acceptance_criteria = @content.match(/h1\. Acceptance Criteria(.*)h1\./m)[1] #put in confgi
@@ -130,8 +131,8 @@ class Cuki
       combined[title] = scenario_blocks[index].gsub(/h6. (.*)/, '\1')
     end
     combined.each do |title, content|
-      scenario_title_compressed = title.gsub(' ', '')
-      feature_filename = title.downcase.gsub(' ', '_')
+      scenario_title_compressed = title.anchorize
+      feature_filename = title.parameterize
 
       dirpath = @config['mappings'][id]
 
