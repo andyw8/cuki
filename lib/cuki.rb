@@ -100,7 +100,7 @@ class Cuki
 
       @content += "Feature: " + doc.at('#content-title')[:value] + "\n\n"
       @content += "#{wiki_link}\n\n"
-      @content += CGI.unescapeHTML(doc.css('#markupTextarea').text)
+      @content += get_markup(doc)
 
       clean
 
@@ -119,7 +119,7 @@ class Cuki
   def handle_multi doc, id
     feature_title_compressed = doc.at('#content-title')[:value].gsub(' ', '')
 
-    @content += CGI.unescapeHTML(doc.css('#markupTextarea').text)
+    @content += get_markup(doc)
     acceptance_criteria = @content.match(/h1\. Acceptance Criteria(.*)h1\./m)[1] #put in confgi
     scenario_titles = acceptance_criteria.scan(/h2. (.*)/).flatten
     scenario_blocks = acceptance_criteria.split(/h2. .*/)
@@ -225,6 +225,10 @@ class Cuki
       puts "No action given"
       exit(1)
     end
+  end
+  
+  def get_markup(doc)
+    CGI.unescapeHTML(doc.css('#markupTextarea').text)
   end
   
 end
