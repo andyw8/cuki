@@ -40,7 +40,7 @@ class Cuki
       file = args[1]
       if file
         id = @config['mappings'].invert[file]
-        raise "could not get id for #{file}"
+        raise "could not get id for #{file}" unless id
         pull_feature id, file
       else
         Parallel.map(@config['mappings'], :in_processes => 4) do |id, filepath|
