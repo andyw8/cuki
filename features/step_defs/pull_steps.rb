@@ -4,7 +4,7 @@ Given /^a Confluence page on "([^"]*)" with id (\d+):$/ do |host, id, content|
   # the URLs to be stubbed
 
   @stubs ||= {}
-  @stubs["http://#{host}/pages/viewpage.action?pageId=#{id}"] = content
+  @stubs["http://#{host}/pages/editpage.action?pageId=#{id}"] = content
   
   File.open('stubs.json', 'w') do |f|
     f.write @stubs.to_json

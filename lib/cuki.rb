@@ -96,7 +96,7 @@ class Cuki
       exit(1)
     end
 
-    if @config['container']
+    if @config['container'] && !filepath.include?('.feature')
       handle_multi doc, id
     else
 
