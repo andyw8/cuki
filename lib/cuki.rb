@@ -84,7 +84,7 @@ class Cuki
   
   def pull_feature(id, filepath)
     @content = ''
-    wiki_link = @config['host'] + '/pages/editpage.action?pageId=' + id.to_s
+    wiki_link = @config['host'] + '/pages/viewpage.action?pageId=' + id.to_s
     puts "Downloading #{wiki_link}"
     response = @client.get wiki_link
     doc = Nokogiri(response.body)

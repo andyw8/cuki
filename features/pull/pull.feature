@@ -43,7 +43,7 @@ Feature: Pull
       """
       Feature: Add Product
 
-      http://example.com/pages/editpage.action?pageId=123
+      http://example.com/pages/viewpage.action?pageId=123
 
 
       This feature describes adding a product
@@ -53,7 +53,7 @@ Feature: Pull
       """
       Feature: Remove Product
 
-      http://example.com/pages/editpage.action?pageId=456
+      http://example.com/pages/viewpage.action?pageId=456
 
 
       This feature describes removing a product

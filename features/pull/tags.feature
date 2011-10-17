@@ -24,7 +24,7 @@ Feature: Tags
       @draft
       Feature: Add Product
 
-      http://example.com/pages/editpage.action?pageId=123
+      http://example.com/pages/viewpage.action?pageId=123
 
 
       Scenario: Foo
