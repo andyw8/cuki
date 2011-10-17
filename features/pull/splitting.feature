@@ -8,7 +8,7 @@ Feature: Splitting
       """
       ---
       host: http://example.com
-      container: !ruby/regexp '/h2. Acceptance Criteria(.*)h2/'
+      container: !ruby/regexp '/h1\. Acceptance Criteria(.*)h1\./m'
       mappings:
         123: features/products
       """

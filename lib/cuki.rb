@@ -121,7 +121,12 @@ class Cuki
     feature_title_compressed = doc.at('#content-title')[:value].anchorize
 
     @content += get_markup(doc)
-    acceptance_criteria = @content.match(/h1\. Acceptance Criteria(.*)h1\./m)[1] #put in confgi
+    acceptance_criteria_matches = @content.match(@config['container'])
+    unless acceptance_criteria_matches
+      puts "Could not match #{config['container']}" 
+      exit(1)
+    end
+    acceptance_criteria = acceptance_criteria_matches[1]
     scenario_titles = acceptance_criteria.scan(/h2. (.*)/).flatten
     scenario_blocks = acceptance_criteria.split(/h2. .*/)
     scenario_blocks.shift
