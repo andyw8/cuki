@@ -29,6 +29,10 @@ Feature: Pull
       <input id="content-title" value="Add Product">
       <div id="markupTextarea">
       This feature describes adding a product
+      
+      # Some comment
+      
+      Blah
       </div>
       """
     And a Confluence page on "example.com" with id 456:
@@ -47,6 +51,10 @@ Feature: Pull
 
 
       This feature describes adding a product
+      
+      - Some comment
+      
+      Blah
 
       """
     And the file "features/products/remove_product.feature" should contain exactly:
