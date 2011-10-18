@@ -6,5 +6,6 @@ tags:
   draft: "{info:title=Draft version}"
   signed_off: "{info:title=Signed-off}"
 mappings:
-  123: features/products/add_product.feature
-  124: features/products/remove_product.feature
+  123: features/products/add_product.feature # single file mapping
+  124: features/products/remove_product.feature # single file mapping
+  125: features/admin # folder mapping
