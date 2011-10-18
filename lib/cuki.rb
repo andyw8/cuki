@@ -95,8 +95,12 @@ class Cuki
       puts doc.to_s
       exit(1)
     end
-
-    if @config['container'] && !filepath.include?('.feature')
+    
+    
+    unless filepath.include?('.feature')
+      
+      @config['container'] ||= /h1\. Acceptance Criteria(.*)h1\./m
+      
       handle_multi doc, id
     else
 
