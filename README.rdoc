@@ -2,14 +2,13 @@
 
 Cuki provides an easy way to import acceptance criteria from a Confluence wiki into Cucumber feature files
 
-* Supports a mapping between Confluence pages and feature files
-* Extracts only the acceptance criteria section of a wiki page
-* Converts Confluence tables to Cucumber tables
-* Strips out unnecessary Confluence formatting (headers., macros, etc.)
-* Includes a link back to the original Confluence page
-* Formats the feature using Cucumber's auto-formatter (optional)
-* Support client SSL certificates for use within an organisation's secure intranet
-* Assign tags to a feature based on the wiki page content
+- Supports a mapping between Confluence pages and feature files
+- Converts Confluence tables to Cucumber tables
+- Strips out unnecessary Confluence formatting (headers, etc.)
+- Includes a link back to the original Confluence page
+- Formats the feature using Cucumber's auto-formatter (optional)
+- Support client SSL certificates for use within an organisation's secure intranet
+- Assign tags to a feature based on the wiki page content
 
 It can be used as part of a CI process or just for ad-hoc imports.
 
@@ -22,6 +21,15 @@ Require the gem in your Gemfile:
 == Setup
 
 Cuki expects a configuration file in config/cuki.yml. See the sample provided.
+
+You can have a one-to-one association between Confluences pages, or you can split a single Confluence
+pages into multiple features. The splitter is a little fussy about structure, it must be:
+
+    h1. Acceptance Criteria
+  
+    h2. Feature Name
+  
+    h2. Another Feature Name
 
 == Usage
     
@@ -39,21 +47,21 @@ You can also pull a single feature:
 
 == Options
 
-* SKIP_AUTOFORMAT to avoid reformatting features (runs over the whole features directory)
-* PEM=/path/to/something.pem.cer (for client certificates)
-* CER=/path/to/something.pem (for client certificates)
+- SKIP_AUTOFORMAT to avoid reformatting features (runs over the whole features directory)
+- PEM=/path/to/something.pem.cer (for client certificates)
+- CER=/path/to/something.pem (for client certificates)
 
-== Known Issues and Limitation
+== Known Issues and Limitations
 
-* Expects the Cucumber scenarios to continue to the the last part of the the page
-* Will only work with Confluence setups which have no password, or use client certificates for authentcation
-* One provides one-way sync, i.e. you can't edit a file locally and push it to Confluence
-* Fails if the specified folder to save a feature to doesn't exist
+- Will only work with Confluence setups which have no password, or use client certificates for authentcation
+- Only provides one-way sync, i.e. you can't edit a file locally and push it to Confluence
+- Fails if the AC block is the last H1 section of the page
+- Should fail if no features found in container block
 
 == TODO
 
-* Handle links
-* Support for pushing features to Confluence (roundtrip editing)
+- Handle links
+- Support for pushing features to Confluence (roundtrip editing)
 
 == Copyright
 
