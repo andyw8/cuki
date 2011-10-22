@@ -36,7 +36,7 @@ Feature: Splitting
       h1. Next Section
       </div>
       """
-    When I run `cuki pull --skip-autoformat --skip-header`
+    When I run `cuki pull --skip-autoformat`
     Then the file "features/products/add_product.feature" should contain exactly:
       """
       Feature: Add Product
@@ -89,7 +89,7 @@ Feature: Splitting
       h1. Next Section
       </div>
       """
-    When I run `cuki pull --skip-autoformat --skip-header`
+    When I run `cuki pull --skip-autoformat`
     Then the file "features/products/add_product.feature" should contain exactly:
       """
       Feature: Add Product
@@ -129,7 +129,7 @@ Feature: Splitting
       h1. Next Section
       </div>
       """
-    When I run `cuki pull --skip-autoformat --skip-header`
+    When I run `cuki pull --skip-autoformat`
     Then the file "features/products/add_remove_product.feature" should contain exactly:
       """
       Feature: Add/Remove Product

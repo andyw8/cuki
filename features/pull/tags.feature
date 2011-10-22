@@ -18,7 +18,7 @@ Feature: Tags
       h5. Scenario: Foo
       </div>
       """
-    When I run `cuki pull --skip-autoformat --skip-header`
+    When I run `cuki pull --skip-autoformat`
     Then the file "features/products/add_product.feature" should contain exactly:
       """
       @draft

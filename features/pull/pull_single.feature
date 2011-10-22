@@ -23,7 +23,7 @@ Feature: Pull single
       This feature describes removing a product
       </div>
       """
-    When I run `cuki pull features/products/add_product.feature --skip-autoformat --skip-header`
+    When I run `cuki pull features/products/add_product.feature --skip-autoformat`
     Then a file named "features/products/add_product.feature" should exist
     But the file "features/products/remove_product.feature" should not exist
 

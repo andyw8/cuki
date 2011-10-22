@@ -27,7 +27,7 @@ Feature: Pull
       This feature describes removing a product
       </div>
       """
-    When I run `cuki pull --skip-autoformat --skip-header`
+    When I run `cuki pull --skip-autoformat`
     Then the file "features/products/add_product.feature" should contain exactly:
       """
       Feature: Add Product
