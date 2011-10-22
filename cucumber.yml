@@ -1,2 +1,2 @@
 ---
-default: '--require features/'
+default: '--require features/ -t ~@pending'
