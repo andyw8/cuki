@@ -4,6 +4,6 @@ class String
   end
 
   def parameterize
-    self.downcase.gsub(' ', '_')
+    self.downcase.gsub(/[^a-z0-9\-]/, '_')
   end
 end

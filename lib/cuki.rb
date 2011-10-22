@@ -155,7 +155,7 @@ class Cuki
 
       FileUtils.mkdir_p(dirpath)
       
-      fname = "#{dirpath}/#{feature_filename.gsub("\r", '')}.feature"
+      fname = "#{dirpath}/#{feature_filename.gsub("\r", '').parameterize}.feature"
       File.open(fname, 'w') do |f|
         puts "Writing #{fname}"
         f.write generated_by unless @skip_header
