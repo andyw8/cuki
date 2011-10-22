@@ -16,7 +16,7 @@ Feature: Splitting
       <input id="content-title" value="Product Management">
       <div id="markupTextarea">
       Pretext
-      
+
       h1. Acceptance Criteria
 
       Something
@@ -41,8 +41,6 @@ Feature: Splitting
       """
       Feature: Add Product
 
-
-
       http://example.com/pages/viewpage.action?pageId=123#ProductManagement-AddProduct
 
       This feature describes adding a product
@@ -55,8 +53,6 @@ Feature: Splitting
       """
       Feature: Remove Product
 
-
-
       http://example.com/pages/viewpage.action?pageId=123#ProductManagement-RemoveProduct
 
       This feature describes removing a product
@@ -66,45 +62,83 @@ Feature: Splitting
 
       """
 
-@announce
-Scenario: Pull all features (specified container)
-  Given a file named "config/cuki.yaml" with:
-    """
-    ---
-    host: http://example.com
-    container: !ruby/regexp '/h1\. \*Acceptance Criteria\*(.*)h1\./m'
-    mappings:
-      123: features/products
-    """
-  And a Confluence page on "example.com" with id 123:
-    """
-    <input id="content-title" value="Product Management">
-    <div id="markupTextarea">
-    h1. *Acceptance Criteria*
+  @announce @focus
+  Scenario: Pull all features (specified container)
+    Given a file named "config/cuki.yaml" with:
+      """
+      ---
+      host: http://example.com
+      container: !ruby/regexp '/h1\. \*Acceptance Criteria\*/'
+      mappings:
+        123: features/products
+      """
+    And a Confluence page on "example.com" with id 123:
+      """
+      <input id="content-title" value="Product Management">
+      <div id="markupTextarea">
+      h1. *Acceptance Criteria*
 
-    Something
+      Something
 
-    h2. Add Product
+      h2. Add Product
 
-    This feature describes adding a product
+      This feature describes adding a product
 
-    h6. Scenario: Scenario A
+      h6. Scenario: Scenario A
 
-    h1. Next Section
-    </div>
-    """
-  When I run `cuki pull --skip-autoformat --skip-header`
-  Then the file "features/products/add_product.feature" should contain exactly:
-    """
-    Feature: Add Product
+      h1. Next Section
+      </div>
+      """
+    When I run `cuki pull --skip-autoformat --skip-header`
+    Then the file "features/products/add_product.feature" should contain exactly:
+      """
+      Feature: Add Product
 
+      http://example.com/pages/viewpage.action?pageId=123#ProductManagement-AddProduct
 
+      This feature describes adding a product
 
-    http://example.com/pages/viewpage.action?pageId=123#ProductManagement-AddProduct
-
-    This feature describes adding a product
-
-    Scenario: Scenario A
+      Scenario: Scenario A
 
 
-    """
+      """
+
+  @announce
+  Scenario:Special Chars
+    Given a file named "config/cuki.yaml" with:
+      """
+      ---
+      host: http://example.com
+      mappings:
+        123: features/products
+      """
+    And a Confluence page on "example.com" with id 123:
+      """
+      <input id="content-title" value="Product Management">
+      <div id="markupTextarea">
+      h1. Acceptance Criteria
+
+      Something
+
+      h2. Add/Remove Product
+
+      This feature describes adding a product
+
+      h6. Scenario: Scenario A
+
+      h1. Next Section
+      </div>
+      """
+    When I run `cuki pull --skip-autoformat --skip-header`
+    Then the file "features/products/add_remove_product.feature" should contain exactly:
+      """
+      Feature: Add/Remove Product
+
+      http://example.com/pages/viewpage.action?pageId=123#ProductManagement-Add%2FRemoveProduct
+
+      This feature describes adding a product
+
+      Scenario: Scenario A
+
+
+      """

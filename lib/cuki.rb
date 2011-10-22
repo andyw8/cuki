@@ -1,11 +1,14 @@
 require 'rubygems'
 require 'httpclient'
-require 'nokogiri'
 require 'yaml'
 require 'CGI'
 require 'json'
 require 'parallel'
-require File.dirname(__FILE__) + '/string_utils.rb'
+require File.dirname(__FILE__) + '/string_utils'
+require File.dirname(__FILE__) + '/link_builder'
+require File.dirname(__FILE__) + '/cleaner'
+require File.dirname(__FILE__) + '/confluence_page'
+require File.dirname(__FILE__) + '/feature_file'
 
 # terrible hack
 if File.exist?('stubs.json') || File.exist?('stubs.json')
@@ -49,9 +52,6 @@ class Cuki
         end
       end
       autoformat
-    elsif 'push' == action
-      configure_push_stubs
-      Pusher.push file, @config
     else
       puts "Unknown action '#{action}"
       exit(1)
@@ -72,8 +72,14 @@ class Cuki
       exit(1)
     end
     @config = YAML::load( File.open( CONFIG_PATH ) )
-    raise "Host not found in #{CONFIG_PATH}" unless @config["host"]
-    raise "Mappings not found in #{CONFIG_PATH}" unless @config["mappings"]
+    unless @config["host"]
+      puts "Host not found in #{CONFIG_PATH}"
+      exit(1)
+    end
+    unless @config["mappings"]
+      puts "Mappings not found in #{CONFIG_PATH}"
+      exit(1)
+    end
   end
   
   def configure_http_client
@@ -84,37 +90,42 @@ class Cuki
   
   def pull_feature(id, filepath)
     @content = ''
-    wiki_edit_link = @config['host'] + '/pages/editpage.action?pageId=' + id.to_s
-    wiki_view_link = @config['host'] + '/pages/viewpage.action?pageId=' + id.to_s
+    
+    link_builder = LinkBuilder.new(@config['host'])
+    
+    wiki_edit_link = link_builder.edit(id)
+    wiki_view_link = link_builder.view(id)
+    
     puts "Downloading #{wiki_edit_link}"
     response = @client.get wiki_edit_link
-    doc = Nokogiri(response.body)
+    
+    confluence_page = ConfluencePage.new(response.body)
 
-    unless doc.at('#content-title')
+    unless confluence_page.content
       puts "Not a valid confluence page:"
-      puts doc.to_s
+      puts response.body
       exit(1)
     end
     
-    
     unless filepath.include?('.feature')
       
-      @config['container'] ||= /h1\. Acceptance Criteria(.*)h1\./m
+      @config['container'] ||= /h1\. Acceptance Criteria/
       
-      handle_multi doc, id
+      handle_multi response.body, id
     else
 
-      @content += "Feature: " + doc.at('#content-title')[:value] + "\n\n"
-      @content += "#{wiki_view_link}\n\n"
-      @content += get_markup(doc)
+      feature_file = FeatureFile.new
+      feature_file.title = confluence_page.title
+      feature_file.link = wiki_view_link
+      feature_file.content = confluence_page.content
 
-      clean
+      content = Cleaner.clean(feature_file.to_s)
 
-      process_tags
+      content = process_tags content
 
-      @content = generated_by + @content unless @skip_header
+      content = generated_by + content unless @skip_header
 
-      save_file filepath
+      save_file content, filepath
     end
   end
   
@@ -126,28 +137,57 @@ class Cuki
     `cucumber -a . --dry-run -P` unless @skip_autoformat
   end
   
-  def handle_multi doc, id
-    feature_title_compressed = doc.at('#content-title')[:value].anchorize
+  def handle_multi response_body, id
+    confluence_page = ConfluencePage.new(response_body)
+    
+    feature_title_compressed = confluence_page.title.anchorize
 
-    @content += get_markup(doc)
+    @content += confluence_page.content
     
-    clean
+    @content = Cleaner.clean(@content)
     
-    acceptance_criteria_matches = @content.match(@config['container'])
-    unless acceptance_criteria_matches
+    unless @content.match(@config['container'])
+      puts "Could not find acceptance criteria container"
+      exit(1)
+    end
+    acceptance_criteria_block = @content.split(@config['container']).last
+    if acceptance_criteria_block.match(/h1\./)
+      acceptance_criteria_block = acceptance_criteria_block.split(/h1\./).first
+    end
+    unless acceptance_criteria_block
       puts "Could not match #{@config['container']} in #{id}" 
       exit(1)
     end
-    acceptance_criteria = acceptance_criteria_matches[1]
-    scenario_titles = acceptance_criteria.scan(/h2. (.*)/).flatten
-    scenario_blocks = acceptance_criteria.split(/h2. .*/)
+    acceptance_criteria = acceptance_criteria_block
+    scenario_titles = acceptance_criteria.scan(/h2\. (.*)/).flatten
+    scenario_blocks = acceptance_criteria.split(/h2\. .*/)
     scenario_blocks.shift
 
     combined = {}
+    found = 0
     scenario_titles.each_with_index do |title, index|
       combined[title] = scenario_blocks[index].gsub(/h6. (.*)/, '\1')
+      found += 1
+    end
+    if 0 == found
+      puts "No scenarios found in doc #{id}"
+      exit(1)
     end
     combined.each do |title, content|
+      
+      tags = []
+      if @config['tags']
+        @config['tags'].each_pair do |tag, snippet|
+          tags << "@#{tag}"  if @content.include?(snippet)
+        end
+      end
+      unless tags.empty?
+        content = tags.join(' ') + "\n" + content
+        # tags.each do |tag|
+        #   content.gsub!(@config['tags'][tag.gsub('@', '')], '')
+        # end
+      end
+      
       scenario_title_compressed = title.anchorize
       feature_filename = title.parameterize
 
@@ -161,62 +201,36 @@ class Cuki
         f.write generated_by unless @skip_header
         f.write "Feature: #{title}\n\n"
         link = @config['host'] + "/pages/viewpage.action?pageId=#{id}##{feature_title_compressed}-#{scenario_title_compressed}"
-        f.write "\n\n" + link
+        f.write link
         f.write content
       end
     end
   end
   
-  def clean
-    
-    @content.gsub!('&nbsp;', '')
-    
-    # remove the double pipes used for table headers in Confluence
-    @content.gsub!('||', '|')
-
-    # remove other noise
-    @content.gsub!("\r\n", "\n")
-    @content.gsub!("\\\\\n", '')
-    @content.gsub!('\\', '')
-
-    # remove any unwanted headers
-    @content.gsub!(/h\d\. (Scenario: .*)/, '\1')
-    @content.gsub!(/h\d\. (Scenario Outline: .*)/, '\1')
-    @content.gsub!(/h\d\. (Background: .*)/, '\1')
-    
-    #Remove fancy quotes
-    @content.gsub!('’', "'")
-    @content.gsub!('‘', "'")
-    @content.gsub!('“', '"')
-    @content.gsub!('”', '"')
-    
-    @content.gsub!(/^#(.*)/, '-' + '\1')
-
-  end
-  
-  def process_tags
+  def process_tags(content)
     tags = []
     if @config['tags']
       @config['tags'].each_pair do |tag, snippet|
-        tags << "@#{tag}"  if @content.include?(snippet)
+        tags << "@#{tag}"  if content.include?(snippet)
       end
     end
     unless tags.empty?
-      @content = tags.join(' ') + "\n" + @content
+      content = tags.join(' ') + "\n" + content
       tags.each do |tag|
-        @content.gsub!(@config['tags'][tag.gsub('@', '')], '')
+        content.gsub!(@config['tags'][tag.gsub('@', '')], '')
       end
     end
+    content
   end
   
-  def save_file(filepath)
+  def save_file(content, filepath)
     dir_path = File.dirname(filepath)
 
     FileUtils.mkdir_p(dir_path) unless File.exists?(dir_path)
 
     File.open(filepath, 'w') do |f|
       puts "Writing #{filepath}"
-      f.puts @content
+      f.puts content
     end
   end
   
@@ -229,29 +243,12 @@ class Cuki
       FileUtils.rm 'stubs.json'
     end
   end
-  
-  def configure_push_stubs
-    if File.exist?('push_stubs.json')
-      stubs = JSON.parse(File.open('push_stubs.json').read)
-      stubs.each do |a|
-        stub_request(:post, "http://mywiki/").
-                with(:body => {"title" => a['title'], "content"=> "\n\n" + a['content']},
-                     :headers => {'Content-Type'=>'application/x-www-form-urlencoded'}).
-                to_return(:status => 200, :body => "", :headers => {})
-      end
-      FileUtils.rm 'push_stubs.json'
-    end
-  end
-  
+
   def validate_args args
     if args.empty?
       puts "No action given"
       exit(1)
     end
-  end
-  
-  def get_markup(doc)
-    CGI.unescapeHTML(doc.css('#markupTextarea').text)
   end
   
 end
