@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "cuki"
-  s.version = "0.0.9"
+  s.version = "0.0.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andy Waite"]
-  s.date = "2011-10-18"
+  s.date = "2011-10-22"
   s.description = ""
   s.email = "andy@andywaite.com"
   s.executables = ["cuki"]
@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
     "cucumber.yml",
     "cuki.gemspec",
     "cuki.yaml.sample",
+    "features/pull/error_handling.feature",
     "features/pull/pull.feature",
     "features/pull/pull_single.feature",
     "features/pull/splitting.feature",
@@ -43,9 +44,14 @@ Gem::Specification.new do |s|
     "features/step_defs/pull_steps.rb",
     "features/step_defs/push_steps.rb",
     "features/support/env.rb",
+    "lib/cleaner.rb",
+    "lib/confluence_page.rb",
     "lib/cuki.rb",
+    "lib/feature_file.rb",
+    "lib/link_builder.rb",
     "lib/pusher.rb",
     "lib/string_utils.rb",
+    "lib/test_bits.rb",
     "spec/cuki_spec.rb",
     "spec/spec_helper.rb"
   ]
