@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "cuki"
-  s.version = "0.0.10"
+  s.version = "0.0.11"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andy Waite"]
-  s.date = "2011-10-22"
+  s.date = "2011-10-23"
   s.description = ""
   s.email = "andy@andywaite.com"
   s.executables = ["cuki"]
@@ -44,7 +44,6 @@ Gem::Specification.new do |s|
     "features/step_defs/pull_steps.rb",
     "features/step_defs/push_steps.rb",
     "features/support/env.rb",
-    "lib/cleaner.rb",
     "lib/confluence_page.rb",
     "lib/cuki.rb",
     "lib/feature_file.rb",
