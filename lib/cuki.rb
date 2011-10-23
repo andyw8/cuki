@@ -34,11 +34,11 @@ class Cuki
       verify_project
       file = args[1]
       if file
-        id = @config['mappings'].invert[file]
+        id = mappings.invert[file]
         raise "could not get id for #{file}" unless id
         pull_feature id, file
       else
-        Parallel.map(@config['mappings'], :in_processes => 4) do |id, filepath|
+        Parallel.map(mappings, :in_processes => 4) do |id, filepath|
           pull_feature id, filepath
         end
       end
@@ -97,25 +97,13 @@ class Cuki
       puts response.body
       exit(1)
     end
-    
-    unless filepath.include?('.feature')
-      
-      @config['container'] ||= /h1\. Acceptance Criteria/
-      
-      handle_multi response.body, id
-    else
 
-      feature_file = FeatureFile.new
-      feature_file.title = confluence_page.title
-      feature_file.link = wiki_view_link
-      feature_file.content = confluence_page.content
+    handle_multi response.body, id
 
-      content = Cleaner.clean(feature_file.to_s)
-
-      content = process_tags content
-
-      save_file content, filepath
-    end
+  end
+  
+  def container
+    @config['container'] ||= /h1\. Acceptance Criteria/
   end
   
   def autoformat
@@ -131,19 +119,21 @@ class Cuki
     
     @content = Cleaner.clean(@content)
     
-    unless @content.match(@config['container'])
+    unless @content.match(container)
       puts "Could not find acceptance criteria container"
       exit(1)
     end
-    acceptance_criteria_block = @content.split(@config['container']).last
+    acceptance_criteria_block = @content.split(container).last
     if acceptance_criteria_block.match(/h1\./)
       acceptance_criteria_block = acceptance_criteria_block.split(/h1\./).first
     end
     unless acceptance_criteria_block
-      puts "Could not match #{@config['container']} in #{id}" 
+      puts "Could not match #{container} in #{id}" 
       exit(1)
     end
+    
     acceptance_criteria = acceptance_criteria_block
+    
     scenario_titles = acceptance_criteria.scan(/h2\. (.*)/).flatten
     scenario_blocks = acceptance_criteria.split(/h2\. .*/)
     scenario_blocks.shift
@@ -160,61 +150,26 @@ class Cuki
     end
     combined.each do |title, content|
       
-      tags = []
-      if @config['tags']
-        @config['tags'].each_pair do |tag, snippet|
-          tags << "@#{tag}"  if @content.include?(snippet)
-        end
-      end
-      unless tags.empty?
-        content = tags.join(' ') + "\n" + content
-        # tags.each do |tag|
-        #   content.gsub!(@config['tags'][tag.gsub('@', '')], '')
-        # end
-      end
-      
       scenario_title_compressed = title.anchorize
       feature_filename = title.parameterize
 
-      dirpath = @config['mappings'][id]
+      dirpath = mappings[id]
 
       FileUtils.mkdir_p(dirpath)
       
       fname = "#{dirpath}/#{feature_filename.gsub("\r", '').parameterize}.feature"
+      puts "Writing #{fname}"
       File.open(fname, 'w') do |f|
-        puts "Writing #{fname}"
+        if @config['tags']
+          @config['tags'].each do |tag, token|
+            f.write "@#{tag}\n" if acceptance_criteria.include?(token)
+          end
+        end
         f.write "Feature: #{title}\n\n"
         link = @config['host'] + "/pages/viewpage.action?pageId=#{id}##{feature_title_compressed}-#{scenario_title_compressed}"
         f.write link
         f.write content
       end
-    end
-  end
-  
-  def process_tags(content)
-    tags = []
-    if @config['tags']
-      @config['tags'].each_pair do |tag, snippet|
-        tags << "@#{tag}"  if content.include?(snippet)
-      end
-    end
-    unless tags.empty?
-      content = tags.join(' ') + "\n" + content
-      tags.each do |tag|
-        content.gsub!(@config['tags'][tag.gsub('@', '')], '')
-      end
-    end
-    content
-  end
-  
-  def save_file(content, filepath)
-    dir_path = File.dirname(filepath)
-
-    FileUtils.mkdir_p(dir_path) unless File.exists?(dir_path)
-
-    File.open(filepath, 'w') do |f|
-      puts "Writing #{filepath}"
-      f.puts content
     end
   end
 
@@ -223,6 +178,10 @@ class Cuki
       puts "No action given"
       exit(1)
     end
+  end
+  
+  def mappings
+    @config['mappings']
   end
   
 end

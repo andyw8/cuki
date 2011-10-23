@@ -2,13 +2,11 @@
 
 Cuki provides an easy way to import acceptance criteria from a Confluence wiki into Cucumber feature files
 
-- Supports a mapping between Confluence pages and feature files
 - Converts Confluence tables to Cucumber tables
 - Strips out unnecessary Confluence formatting (headers, etc.)
 - Includes a link back to the original Confluence page
 - Formats the feature using Cucumber's auto-formatter (optional)
 - Support client SSL certificates for use within an organisation's secure intranet
-- Assign tags to a feature based on the wiki page content
 
 It can be used as part of a CI process or just for ad-hoc imports.
 
@@ -45,6 +43,11 @@ You can also pull a single feature:
 
     cuki pull features/add_product.feature
 
+== Tags
+
+You can add tags to a feature based on the wiki page content. See the sample configuration file.
+
+
 == Options
 
 - --skip--autoformat to avoid reformatting features (runs over the whole features directory)
@@ -60,8 +63,6 @@ If your Confluence installation requires a client certificate, you can supply th
 
 - Will only work with Confluence setups which have no password, or use client certificates for authentication
 - Only provides one-way sync, i.e. you can't edit a file locally and push it to Confluence
-- Fails if the AC block is the last h1. section of the page
-- Should fail if no features found in container block
 
 == TODO
 

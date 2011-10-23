@@ -2,10 +2,10 @@
 # the mappings associate the page IDs on Confluence with local feature files
 ---
 host: http://mywiki
+container: "h1. Acceptance Criteria"
 tags:
   draft: "{info:title=Draft version}"
   signed_off: "{info:title=Signed-off}"
 mappings:
-  123: features/products/add_product.feature # single file mapping
-  124: features/products/remove_product.feature # single file mapping
-  125: features/admin # folder mapping
+  123: features/products
+  124: features/admin

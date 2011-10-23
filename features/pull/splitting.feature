@@ -62,7 +62,7 @@ Feature: Splitting
 
       """
 
-  @announce @focus
+  @announce
   Scenario: Pull all features (specified container)
     Given a file named "config/cuki.yaml" with:
       """
@@ -104,7 +104,7 @@ Feature: Splitting
       """
 
   @announce
-  Scenario:Special Chars
+  Scenario: Special Chars
     Given a file named "config/cuki.yaml" with:
       """
       ---
@@ -142,3 +142,4 @@ Feature: Splitting
 
 
       """
+

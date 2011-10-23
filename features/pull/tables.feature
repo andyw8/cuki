@@ -7,13 +7,17 @@ Feature: Tables
       ---
       host: http://example.com
       mappings:
-        123: features/products/add_product.feature
+        123: features/products
       """
     And a Confluence page on "example.com" with id 123:
       """
-      <input id="content-title" value="Add Product">
+      <input id="content-title" value="Products">
       <div id="markupTextarea">
-      h5. Scenario: Foo
+      h1. Acceptance Criteria
+      
+      h2. Add Product
+      
+      h6. Scenario: Foo
 
       Given this:
       || foo || bar ||
@@ -26,8 +30,7 @@ Feature: Tables
       """
       Feature: Add Product
 
-      http://example.com/pages/viewpage.action?pageId=123
-
+      http://example.com/pages/viewpage.action?pageId=123#Products-AddProduct
 
       Scenario: Foo
 

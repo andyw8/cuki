@@ -14,3 +14,25 @@ Feature: Error Handling
       """
       No config file found at config/cuki.yaml
       """
+
+  Scenario: Missing scenarios
+    Given a file named "config/cuki.yaml" with:
+      """
+      ---
+      host: http://example.com
+      mappings:
+        123: features/products
+      """
+    And a Confluence page on "example.com" with id 123:
+      """
+      <input id="content-title" value="Add Product">
+      <div id="markupTextarea">
+      h1. Acceptance Criteria
+      </div>
+      """
+    When I run `cuki pull --skip-autoformat`
+    Then it should fail with:
+      """
+      No scenarios found in doc 123
+      """
+
