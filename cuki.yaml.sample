@@ -1,5 +1,5 @@
-# edit this and save it as config/cuki.yaml
-# the mappings associate the page IDs on Confluence with local feature files
+# edit this file and save it as config/cuki.yaml
+# each mapping associates a Confluence page with a folder containing one or more feature files
 ---
 host: http://mywiki
 container: "h1. Acceptance Criteria"

@@ -2,7 +2,6 @@ Feature: Splitting
   
   Instead of association one wiki page per feature file, you can split a wiki file across multiple feature files.
 
-  @announce
   Scenario: Pull all features (default container)
     Given a file named "config/cuki.yaml" with:
       """
@@ -62,7 +61,6 @@ Feature: Splitting
 
       """
 
-  @announce
   Scenario: Pull all features (specified container)
     Given a file named "config/cuki.yaml" with:
       """
@@ -103,7 +101,6 @@ Feature: Splitting
 
       """
 
-  @announce
   Scenario: Special Chars
     Given a file named "config/cuki.yaml" with:
       """

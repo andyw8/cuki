@@ -14,39 +14,39 @@ It can be used as part of a CI process or just for ad-hoc imports.
 
 Require the gem in your Gemfile:
 
-    gem 'cuki'
+    gem install cuki
+
+(or use Bundler)
 
 == Setup
 
 Cuki expects a configuration file in config/cuki.yml. See the sample provided.
 
-You can have a one-to-one association between Confluences pages, or you can split a single Confluence
-pages into multiple features. The splitter is a little fussy about structure, it must be:
+A single Confluence page maps to one or more features. The page should contain the structure:
 
     h1. Acceptance Criteria
   
     h2. Feature Name
+
+		Scenario: ...
   
     h2. Another Feature Name
+
+    Scenario: ...
 
 == Usage
     
 Run it from the command line:
 
-    bundle exec cuki pull
-
-or, if using binstubs:
-
-    bin/cuki pull
+    cuki pull
     
-You can also pull a single feature:
+You can also pull from a single Confluence page:
 
-    cuki pull features/add_product.feature
+    cuki pull features/add_product
 
 == Tags
 
 You can add tags to a feature based on the wiki page content. See the sample configuration file.
-
 
 == Options
 
@@ -62,15 +62,10 @@ If your Confluence installation requires a client certificate, you can supply th
 == Known Issues and Limitations
 
 - Will only work with Confluence setups which have no password, or use client certificates for authentication
-- Only provides one-way sync, i.e. you can't edit a file locally and push it to Confluence
-
-== TODO
-
-- Handle links
-- Support for pushing features to Confluence (roundtrip editing)
+- Excepts a two level hierarchy, with folders used for epics/themes, containing one or more feature files.
+- Only provides one-way pull, i.e. you can't edit a file locally and push it to Confluence
 
 == Copyright
 
 Copyright (c) 2011 Andy Waite. See LICENSE.txt for
 further details.
-

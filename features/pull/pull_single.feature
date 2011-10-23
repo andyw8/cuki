@@ -1,6 +1,5 @@
 Feature: Pull single
 
-  @focus @announce
   Scenario: Pull single feature
     Given a file named "config/cuki.yaml" with:
       """
