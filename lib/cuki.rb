@@ -14,6 +14,9 @@ require File.dirname(__FILE__) + '/test_bits'
 class Cuki
 
   CONFIG_PATH = 'config/cuki.yaml'
+  PRIMARY_HEADER = "h1\."
+  FEATURE_HEADER = "h2\."
+  SCENARIO_HEADER = "h6\."
 
   def self.invoke(args)
     new(args)
@@ -124,8 +127,8 @@ class Cuki
       exit(1)
     end
     acceptance_criteria_block = @content.split(container).last
-    if acceptance_criteria_block.match(/h1\./)
-      acceptance_criteria_block = acceptance_criteria_block.split(/h1\./).first
+    if acceptance_criteria_block.include?(PRIMARY_HEADER)
+      acceptance_criteria_block = acceptance_criteria_block.split(/#{PRIMARY_HEADER}/).first
     end
     unless acceptance_criteria_block
       puts "Could not match #{container} in #{id}" 
@@ -134,14 +137,14 @@ class Cuki
     
     acceptance_criteria = acceptance_criteria_block
     
-    scenario_titles = acceptance_criteria.scan(/h2\. (.*)/).flatten
-    scenario_blocks = acceptance_criteria.split(/h2\. .*/)
+    scenario_titles = acceptance_criteria.scan(/#{FEATURE_HEADER} (.*)/).flatten
+    scenario_blocks = acceptance_criteria.split(/#{FEATURE_HEADER} .*/)
     scenario_blocks.shift
 
     combined = {}
     found = 0
     scenario_titles.each_with_index do |title, index|
-      combined[title] = scenario_blocks[index].gsub(/h6. (.*)/, '\1')
+      combined[title] = scenario_blocks[index].gsub(/#{SCENARIO_HEADER} (.*)/, '\1')
       found += 1
     end
     if 0 == found
