@@ -14,6 +14,7 @@ require File.dirname(__FILE__) + '/test_bits'
 class Cuki
 
   CONFIG_PATH = 'config/cuki.yaml'
+  DEFAULT_CONTAINER = /h1\. Acceptance Criteria/
   PRIMARY_HEADER = "h1\."
   FEATURE_HEADER = "h2\."
   SCENARIO_HEADER = "h6\."
@@ -23,57 +24,45 @@ class Cuki
   end
 
   def initialize(args)
-    validate_args args
+    @args = args
+    validate_args
     read_config
     configure_http_client
+    
+    @link_builder = LinkBuilder.new(@config['host'])
 
     action = args.first
     if args.include?('--skip-autoformat')
       args.delete_if { |arg| '--skip-autoformat' == arg }
       @skip_autoformat = true
     end
-    if 'pull' == action
-      configure_pull_stubs
-      verify_project
-      file = args[1]
-      if file
-        id = mappings.invert[file]
-        raise "could not get id for #{file}" unless id
-        pull_feature id, file
-      else
-        Parallel.map(mappings, :in_processes => 4) do |id, filepath|
-          pull_feature id, filepath
-        end
-      end
-      autoformat
+    configure_pull_stubs
+    verify_project
+    file = args[1]
+    if file
+      id = mappings.invert[file]
+      raise "could not get id for #{file}" unless id
+      pull_feature id, file
     else
-      puts "Unknown action '#{action}"
-      exit(1)
+      Parallel.map(mappings, :in_processes => 4) do |id, filepath|
+        pull_feature id, filepath
+      end
     end
+    autoformat
   end
 
   private
   
   def verify_project
-    # check features folder exists
-    raise "features folder not found" unless File.exists?('features')
-    autoformat
+    terminate "features folder not found" unless File.exists?('features')
+    `cucumber --dry-run -P`
   end
   
   def read_config
-    unless File.exist?(CONFIG_PATH)
-      puts "No config file found at #{CONFIG_PATH}"
-      exit(1)
-    end
+    terminate "No config file found at #{CONFIG_PATH}" unless File.exist?(CONFIG_PATH)
     @config = YAML::load( File.open( CONFIG_PATH ) )
-    unless @config["host"]
-      puts "Host not found in #{CONFIG_PATH}"
-      exit(1)
-    end
-    unless @config["mappings"]
-      puts "Mappings not found in #{CONFIG_PATH}"
-      exit(1)
-    end
+    terminate "Host not found in #{CONFIG_PATH}" unless @config["host"]
+    terminate "Mappings not found in #{CONFIG_PATH}" unless @config["mappings"]
   end
   
   def configure_http_client
@@ -85,28 +74,22 @@ class Cuki
   def pull_feature(id, filepath)
     @content = ''
     
-    link_builder = LinkBuilder.new(@config['host'])
-    
-    wiki_edit_link = link_builder.edit(id)
-    wiki_view_link = link_builder.view(id)
+    wiki_edit_link = @link_builder.edit(id)
+    wiki_view_link = @link_builder.view(id)
     
     puts "Downloading #{wiki_edit_link}"
     response = @client.get wiki_edit_link
     
     confluence_page = ConfluencePage.new(response.body)
 
-    unless confluence_page.content
-      puts "Not a valid confluence page:"
-      puts response.body
-      exit(1)
-    end
+    terminate "Not a valid confluence page:\n" + response.body unless confluence_page.content
 
     handle_multi response.body, id
 
   end
   
   def container
-    @config['container'] ||= /h1\. Acceptance Criteria/
+    @config['container'] ||= DEFAULT_CONTAINER
   end
   
   def autoformat
@@ -116,26 +99,18 @@ class Cuki
   def handle_multi response_body, id
     confluence_page = ConfluencePage.new(response_body)
     
-    feature_title_compressed = confluence_page.title.anchorize
-
     @content += confluence_page.content
     
     @content = Cleaner.clean(@content)
     
-    unless @content.match(container)
-      puts "Could not find acceptance criteria container"
-      exit(1)
-    end
-    acceptance_criteria_block = @content.split(container).last
-    if acceptance_criteria_block.include?(PRIMARY_HEADER)
-      acceptance_criteria_block = acceptance_criteria_block.split(/#{PRIMARY_HEADER}/).first
-    end
-    unless acceptance_criteria_block
-      puts "Could not match #{container} in #{id}" 
-      exit(1)
-    end
+    terminate "Could not find acceptance criteria container" unless @content.match(container)
     
-    acceptance_criteria = acceptance_criteria_block
+    acceptance_criteria = @content.split(container).last
+    if acceptance_criteria.include?(PRIMARY_HEADER)
+      acceptance_criteria = acceptance_criteria.split(/#{PRIMARY_HEADER}/).first
+    end
+        
+    terminate "Could not match #{container} in #{id}" unless acceptance_criteria
     
     scenario_titles = acceptance_criteria.scan(/#{FEATURE_HEADER} (.*)/).flatten
     scenario_blocks = acceptance_criteria.split(/#{FEATURE_HEADER} .*/)
@@ -147,13 +122,10 @@ class Cuki
       combined[title] = scenario_blocks[index].gsub(/#{SCENARIO_HEADER} (.*)/, '\1')
       found += 1
     end
-    if 0 == found
-      puts "No scenarios found in doc #{id}"
-      exit(1)
-    end
+    
+    terminate "No scenarios found in doc #{id}" if 0 == found
     combined.each do |title, content|
       
-      scenario_title_compressed = title.anchorize
       feature_filename = title.parameterize
 
       dirpath = mappings[id]
@@ -169,22 +141,26 @@ class Cuki
           end
         end
         f.write "Feature: #{title}\n\n"
-        link = @config['host'] + "/pages/viewpage.action?pageId=#{id}##{feature_title_compressed}-#{scenario_title_compressed}"
-        f.write link
+                
+        f.write @link_builder.view(id, confluence_page.title, title)
         f.write content
       end
     end
   end
 
-  def validate_args args
-    if args.empty?
-      puts "No action given"
-      exit(1)
-    end
+  def validate_args
+    terminate "No action given" if @args.empty?
+    command = @args.first
+    terminate "Unknown action '#{@args.first}'" unless 'pull' == command
   end
   
   def mappings
     @config['mappings']
+  end
+  
+  def terminate(message)
+    puts message
+    exit(1)
   end
   
 end
