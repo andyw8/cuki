@@ -54,6 +54,7 @@ class Cuki
 
   def verify_project
     terminate "features folder not found" unless File.exists?('features')
+    puts "Verifying existing features"
     `cucumber --dry-run -P`
   end
 
@@ -82,17 +83,21 @@ class Cuki
   end
 
   def autoformat!
-    `cucumber -a . --dry-run -P` unless @skip_autoformat
+    unless @skip_autoformat
+      `cucumber -a . --dry-run -P`
+      puts "Running autoformat"
+    end
   end
 
   def handle_multi response_body, id
     confluence_page = ConfluencePage.new(response_body)
 
-    content = confluence_page.content
+    full_content = confluence_page.content
 
-    terminate "Could not find acceptance criteria container" unless content.match(container)
+    terminate "Could not find acceptance criteria container" unless full_content.match(container)
 
-    acceptance_criteria = content.split(container).last
+    acceptance_criteria = full_content.split(container).last
+    
     if acceptance_criteria.include?(PRIMARY_HEADER)
       acceptance_criteria = acceptance_criteria.split(/#{PRIMARY_HEADER}/).first
     end
@@ -103,14 +108,13 @@ class Cuki
     scenario_blocks = acceptance_criteria.split(/#{FEATURE_HEADER} .*/)
     scenario_blocks.shift
 
+    puts "Warning: No scenarios found in doc #{id}" if scenario_titles.empty?
+
     combined = {}
-    found = 0
     scenario_titles.each_with_index do |title, index|
-      combined[title] = scenario_blocks[index].gsub(/#{SCENARIO_HEADER} (.*)/, '\1')
-      found += 1
+      combined[title] = scenario_blocks[index].gsub(/h\d. ([Scenario|Scenario Outline].*)/, '\1')
     end
 
-    terminate "No scenarios found in doc #{id}" if 0 == found
     combined.each do |title, content|
 
       feature_filename = title.parameterize
@@ -122,7 +126,7 @@ class Cuki
       File.open(fname, 'w') do |f|
         if @config['tags']
           @config['tags'].each do |tag, token|
-            f.write "@#{tag}\n" if acceptance_criteria.include?(token)
+            f.write "@#{tag}\n" if full_content.include?(token)
           end
         end
         f.write "Feature: #{title}\n\n"
