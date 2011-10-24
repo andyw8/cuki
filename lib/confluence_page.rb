@@ -13,7 +13,7 @@ class ConfluencePage
   def content
     content = CGI.unescapeHTML @doc.css('#markupTextarea').text
     
-    content.gsub!('&nbsp;', '')
+    content.gsub!('&nbsp;', ' ')
     
     # remove the double pipes used for table headers in Confluence
     content.gsub!('||', '|')
