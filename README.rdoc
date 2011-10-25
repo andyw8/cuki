@@ -1,18 +1,8 @@
 = Overview
 
-Cuki provides an easy way to import acceptance criteria from a Confluence wiki into Cucumber feature files
-
-- Converts Confluence tables to Cucumber tables
-- Strips out unnecessary Confluence formatting (headers, etc.)
-- Includes a link back to the original Confluence page
-- Formats the feature using Cucumber's auto-formatter (optional)
-- Support client SSL certificates for use within an organisation's secure intranet
-
-It can be used as part of a CI process or just for ad-hoc imports.
+Cuki provides an easy way to import acceptance criteria from a Confluence wiki into Cucumber feature files. It can be used as part of a CI process or just for ad-hoc imports.
 
 == Installation
-
-Require the gem in your Gemfile:
 
     gem install cuki
 
@@ -25,11 +15,11 @@ Cuki expects a configuration file in config/cuki.yml. See the sample provided.
 A single Confluence page maps to one or more features. The page should contain the structure:
 
     h1. Acceptance Criteria
-  
+
     h2. Feature Name
 
-		Scenario: ...
-  
+    Scenario: ...
+
     h2. Another Feature Name
 
     Scenario: ...
@@ -40,13 +30,13 @@ Run it from the command line:
 
     cuki pull
     
-You can also pull from a single Confluence page:
+You can also pull from a particular Confluence page:
 
-    cuki pull features/add_product
+    cuki pull features/products
 
 == Tags
 
-You can add tags to a feature based on the wiki page content. See the sample configuration file.
+You can add tags to a feature based on the wiki page markup. See the sample configuration file.
 
 == Options
 
@@ -54,16 +44,23 @@ You can add tags to a feature based on the wiki page content. See the sample con
 
 == Configuration
 
-If your Confluence installation requires a client certificate, you can supply the paths for these:
+If your Confluence installation requires a client certificate, you can supply the paths for these as environment variables:
 
-- CER=/path/to/ca.pem.cer
-- PEM=/path/to/something.pem
+    CER=/path/to/ca.pem.cer PEM=/path/to/something.pem cuki pull
 
 == Known Issues and Limitations
 
 - Will only work with Confluence setups which have no password, or use client certificates for authentication
-- Excepts a two level hierarchy, with folders used for epics/themes, containing one or more feature files.
-- Only provides one-way pull, i.e. you can't edit a file locally and push it to Confluence
+- Expects a two level hierarchy, with folders used for epics/themes, containing one or more feature files
+
+== Bugs and To Do
+
+- Should exit before importing features if the current features aren't valid syntax
+
+== Future Plans
+
+- Add roundtrip editing, i.e. edit a file locally and push it to Confluence
+- Some way to update the wiki to indicate which scenarios are passing, failing or not yet implemented
 
 == Copyright
 

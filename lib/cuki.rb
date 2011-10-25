@@ -56,6 +56,7 @@ class Cuki
     terminate "features folder not found" unless File.exists?('features')
     puts "Verifying existing features"
     `cucumber --dry-run -P`
+    terminate "Validation of existing features failed" unless 0 == $? 
   end
 
   def read_config
@@ -110,6 +111,8 @@ class Cuki
 
     puts "Warning: No scenarios found in doc #{id}" if scenario_titles.empty?
 
+    pretext = acceptance_criteria.split(/#{FEATURE_HEADER}/).first
+
     combined = {}
     scenario_titles.each_with_index do |title, index|
       combined[title] = scenario_blocks[index].gsub(/h\d. ([Scenario|Scenario Outline].*)/, '\1')
@@ -126,7 +129,12 @@ class Cuki
       File.open(fname, 'w') do |f|
         if @config['tags']
           @config['tags'].each do |tag, token|
-            f.write "@#{tag}\n" if full_content.include?(token)
+            f.write "@#{tag}\n" if pretext.include?(token)
+          end
+        end
+        if @config['tags']
+          @config['tags'].each do |tag, token|
+            content.gsub!(token, "@#{tag}\n")
           end
         end
         f.write "Feature: #{title}\n\n"

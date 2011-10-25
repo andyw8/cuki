@@ -1,5 +1,6 @@
 Feature: Tags
 
+  @announce
   Scenario: 
     Given a file named "config/cuki.yaml" with:
       """
@@ -7,7 +8,8 @@ Feature: Tags
       host: http://example.com
       tags:
         draft: "{info:title=Draft version}"
-        signed_off: "{info:title=Signed-off}"
+        pending: "{info:title=Pending}"
+        another: "{info:title=Another}"
       mappings:
         123: features/products
       """
@@ -16,10 +18,12 @@ Feature: Tags
       <input id="content-title" value="Products">
       <div id="markupTextarea">
       h1. Acceptance Criteria
-      
       {info:title=Draft version}
       
       h2. Add Product
+      
+      {info:title=Pending}
+      {info:title=Another}
       
       h6. Scenario: Foo
       </div>
@@ -31,6 +35,11 @@ Feature: Tags
       Feature: Add Product
 
       http://example.com/pages/viewpage.action?pageId=123#Products-AddProduct
+
+      @pending
+
+      @another
+
 
       Scenario: Foo
 
