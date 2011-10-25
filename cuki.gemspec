@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "cuki"
-  s.version = "0.0.11"
+  s.version = "0.0.12"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andy Waite"]
-  s.date = "2011-10-23"
+  s.date = "2011-10-25"
   s.description = ""
   s.email = "andy@andywaite.com"
   s.executables = ["cuki"]
@@ -34,7 +34,6 @@ Gem::Specification.new do |s|
     "features/pull/error_handling.feature",
     "features/pull/pull.feature",
     "features/pull/pull_single.feature",
-    "features/pull/splitting.feature",
     "features/pull/tables.feature",
     "features/pull/tags.feature",
     "features/pull/textile.feature",
